@@ -2,7 +2,7 @@
 library(dplyr)
 
 
-detectTypes <- function(df, dateForm){
+detectTypes <- function(df, dateForm = "%m/%d/%Y", cat_tol = NULL, user_tol = 50){
   n <- nrow(df)
   cols <- character(0)
   nums <- select_if(df, is.numeric)
@@ -19,19 +19,26 @@ detectTypes <- function(df, dateForm){
     }
   }
 
-  # iterate through columns that are numbers to identify integers and determine if they are categorical
+  # iterate through columns that are numbers to identify integers and determine if they are categorical, dates
   for (column in names(nums)){
     if (class(df[[column]]) == 'integer'){
       unique_ints <- length(as.vector(unique(df[[column]])))
       percent_unique <- 100 * unique_ints / length(na.omit(df[[column]]))
+      is_cat = 0
 
-      if (percent_unique <= 50){ # [TODO] implement a user provided tolerance to automatically mark cat variables?
+      if (!is.null(cat_tol) ) {
+        if (percent_unique <= cat_tol){
+          nums[[column]] <- as.character(df[[column]])
+        }
+      } else if (percent_unique <= user_tol){
         is_cat <- menu(c('Categorical','Date', 'Keep as an Integer!'), title = cat(column, ' contains ', 100 * unique_ints / n ,'% unique values. Is this:'))
       }
-      if (is_cat == 1){
+
+      if (is_cat == 1){ # Set column to character type
         nums[[column]] <- as.character(df[[column]])
       }
-      if (is_cat == 2){
+
+      if (is_cat == 2){ # Set column to Date type, using user specified format
         date_format <- readline(prompt ='What is the format of this date? Example: for day of year, provide "%j"')
         dates <- try(as.Date(nums[[column]], format = date_format), silent = TRUE)
 
@@ -44,6 +51,7 @@ detectTypes <- function(df, dateForm){
 
     }
   }
+
   # return transformed data
   return(cbind(nums,not_nums))
 }
@@ -52,4 +60,5 @@ detectTypes <- function(df, dateForm){
 # Test Case
 df <- read.csv("C:/Users/moore/Documents/600/Project/fires.csv")
 dateForm <- "%m/%d/%Y"
-clean <- detectTypes(df, dateForm)
+clean <- detectTypes(df)
+str(clean)
