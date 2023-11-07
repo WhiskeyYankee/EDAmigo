@@ -2,32 +2,42 @@
 library(dplyr)
 
 
-#' Title
+#' detectTypes takes a raw dataframe and coerces variables to the appropriate class.
 #'
-#' @param df
-#' @param dateForm
-#' @param cat_tol
-#' @param user_tol
+#' @param df A dataframe with any combination of variable classes
+#' @param dateForm A string, or vector of strings, indicating the format of any dates contained in the dataframe
+#' @param cat_tol A numeric value indicating the tolerance of unique integer values to automatically coerce a column to a categorical variable. Report in % from 0 to 100.
+#' @param user_tol A numeric value indicating the tolerance to recieve user input prompts to assist in selecting which integer columns should be coerced to categorical, date, or retain as an integer. Report in % from 0 to 100.
 #'
-#' @return
+#' @return The dataframe with columns coerced to the appropriate classes.
 #' @export
 #'
 #' @examples
-detectTypes <- function(df, dateForm = "%m/%d/%Y", cat_tol = NULL, user_tol = 50){
+#' # Define a random data frame with dates and categorical integers that are not properly classified
+#'df <- data.frame(matrix(rnorm(20), nrow = 10))
+#'df$Date <- rep('12/01/2014', 10)
+#'df$DOY <- rep('123', 10)
+#'df$int2cat <- rep(c(1,2,3,4,5), 2)
+#'
+#'# View classes of the variables in the dataframe
+#'str(df)
+#'
+#'# Define the format of the dates in the dataframe
+#'dateForm <-  c('%j',"%m/%d/%Y")
+#'
+#'# Clean the dataframe using a tolerance of 1%
+#'clean <- detectTypes(df,dateForm,cat_tol = 1)
+#'str(clean)
+#'
+#'
+detectTypes <- function(df, dateForm = "%m/%d/%Y", cat_tol = NULL, user_tol = 80){
   n <- nrow(df)
-  cols <- character(0)
-  nums <- select_if(df, is.numeric)
+  nums <- dplyr::select_if(df, is.numeric)
   not_nums <- df[!colnames(df) %in% colnames(nums)]
 
   # iterate through columns that are not numbers and try to transform to a date
-  for (column in names(not_nums)){
-    dates <- try(as.Date(not_nums[[column]], format = dateForm), silent = TRUE)
-
-    # if the column can transform to a date, coerce to date and replace appropriate not_nums with date
-    if (!inherits(dates, "try-error") & !all(is.na(dates))){
-      cols <- c(cols, column)
-      not_nums[[column]] <- as.Date(not_nums[[column]], format = dateForm)
-    }
+  for (column in names(not_nums)){   # [TODO] Adjust for a vector of date string input
+    not_nums[[column]] <- tryDate(not_nums, column, dateForm)
   }
 
   # iterate through columns that are numbers to identify integers and determine if they are categorical, dates
@@ -41,7 +51,9 @@ detectTypes <- function(df, dateForm = "%m/%d/%Y", cat_tol = NULL, user_tol = 50
         if (percent_unique <= cat_tol){
           nums[[column]] <- as.character(df[[column]])
         }
-      } else if (percent_unique <= user_tol){
+      }
+
+      if (percent_unique <= user_tol){
         is_cat <- menu(c('Categorical','Date', 'Keep as an Integer!'), title = cat(column, ' contains ', 100 * unique_ints / n ,'% unique values. Is this:'))
       }
 
@@ -69,7 +81,11 @@ detectTypes <- function(df, dateForm = "%m/%d/%Y", cat_tol = NULL, user_tol = 50
 
 
 # Test Case
-df <- read.csv("C:/Users/moore/Documents/600/Project/fires.csv")
-dateForm <- "%m/%d/%Y"
-clean <- detectTypes(df)
+df <- data.frame(matrix(rnorm(20), nrow = 10))
+df$Date <- rep('12/01/2014', 10)
+df$d2 <- rep('123', 10)
+df$int2cat <- rep(c(1,2,3,4,5), 2)
+str(df)
+dateForm <- c('%j',"%m/%d/%Y")
+clean <- detectTypes(df, dateForm, cat_tol = 1, user_tol = 60)
 str(clean)
