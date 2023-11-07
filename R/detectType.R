@@ -2,6 +2,17 @@
 library(dplyr)
 
 
+#' Title
+#'
+#' @param df
+#' @param dateForm
+#' @param cat_tol
+#' @param user_tol
+#'
+#' @return
+#' @export
+#'
+#' @examples
 detectTypes <- function(df, dateForm = "%m/%d/%Y", cat_tol = NULL, user_tol = 50){
   n <- nrow(df)
   cols <- character(0)
@@ -23,7 +34,7 @@ detectTypes <- function(df, dateForm = "%m/%d/%Y", cat_tol = NULL, user_tol = 50
   for (column in names(nums)){
     if (class(df[[column]]) == 'integer'){
       unique_ints <- length(as.vector(unique(df[[column]])))
-      percent_unique <- 100 * unique_ints / length(na.omit(df[[column]]))
+      percent_unique <- 100 * (unique_ints / length(na.omit(df[[column]])))
       is_cat = 0
 
       if (!is.null(cat_tol) ) {
