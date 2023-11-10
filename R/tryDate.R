@@ -1,24 +1,24 @@
-#' tryDate attempts to coerce non-numeric columns to a date
+#' tryDate
 #'
-#' @param not_nums
-#' @param column
-#' @param dateForm
+#' 'tryDate' attempts to coerce non-numeric columns to a date
 #'
-#' @return
-#' @export
+#' @param column A dataframe column to attempt to coerce to a date.
+#' @param dateForm A string, or vector of strings, indicating the format of any dates contained in the dataframe.
 #'
-#' @examples
-tryDate <- function(not_nums, column, dateForm){
+#' @noRd
+#' @return The coerced date column, or the original column, if coercion is not possible.
+
+.tryDate <- function(column, dateForm){
   for (datefrm in dateForm){
 
 
-    dates <- try(as.Date(not_nums[[column]], format = datefrm), silent = TRUE)
+    dates <- try(as.Date(column, format = datefrm), silent = TRUE)
 
-    # If the column can transform to a date, coerce to date and replace appropriate not_nums with date
+    # If the column can transform to a date, coerce to date and replace appropriate df with date
     if (!inherits(dates, "try-error") & !all(is.na(dates))){
-      return(as.Date(not_nums[[column]], format = datefrm))
+      return(as.Date(column, format = datefrm))
     }
     else
-      { return(not_nums[[column]]) }
+      { return(column) }
   }
 }
