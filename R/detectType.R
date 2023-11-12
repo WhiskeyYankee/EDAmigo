@@ -35,14 +35,14 @@ detectTypes <- function(df, dateForm = "%m/%d/%Y", cat_tol = NULL, user_tol = 80
 
   # Iterate through columns that are not numbers and try to transform to a date
   for (column in names(not_nums)){
-    not_nums[[column]] <- EDAmigo:::.tryDate(not_nums[[column]], dateForm)
+    not_nums[[column]] <- .tryDate(not_nums[[column]], dateForm)
   }
 
   # Iterate through columns that are numbers to identify integers and determine if they are true integers
   for (column in names(nums)){
     if (sum(df[[column]] %% 1, na.rm= TRUE) == 0){ # Identify any columns of all integers
       unique_ints <- length(as.vector(unique(df[[column]])))
-      percent_unique <- 100 * (unique_ints / length(na.omit(df[[column]])))
+      percent_unique <- 100 * (unique_ints / length(stats::na.omit(df[[column]])))
       is_cat = 0
 
       if (!is.null(cat_tol) ) {
@@ -50,9 +50,9 @@ detectTypes <- function(df, dateForm = "%m/%d/%Y", cat_tol = NULL, user_tol = 80
           nums[[column]] <- as.character(df[[column]])
         }
       }
-      if (class(nums[[column]]) != "character"){
+      if (!methods::is(nums[[column]], "character")){
         if (percent_unique <= user_tol){
-          is_cat <- menu(c('Categorical','Date', 'Keep as an Integer!'), title = cat(column, ' contains ', percent_unique,'% unique values. Is this:'))
+          is_cat <- utils::menu(c('Categorical','Date', 'Keep as an Integer!'), title = cat(column, ' contains ', percent_unique,'% unique values. Is this:'))
         }
 
         if (is_cat == 1){ # Set column to character type
@@ -60,22 +60,22 @@ detectTypes <- function(df, dateForm = "%m/%d/%Y", cat_tol = NULL, user_tol = 80
         }
 
         if (is_cat == 2){ # Set column to Date type, using user specified format
-          dates = EDAmigo:::.tryDate(not_nums[[column]], dateForm)
+          dates = .tryDate(not_nums[[column]], dateForm)
           # if the column can transform to a date, coerce to date and replace appropriate nums with date
-          if (class(dates)== 'Date'){
+          if (methods::is(dates, 'Date')){
             nums[[column]] <- dates
           }
           else{
             halt = FALSE
               while (halt == FALSE){
                 date_format <- readline(prompt ='This date does not match any of your provided date formats. What is the format of this date? Example: for day of year, provide "%j" ')
-                dates <- EDAmigo:::.tryDate(nums[[column]], date_format)
-                if (class(dates) == 'Date'){
+                dates <- .tryDate(nums[[column]], date_format)
+                if (methods::is(dates, 'Date')){
                   halt = TRUE
                   nums[[column]] <- dates
                 }
                 else (
-                  halt <- menu(c("Try another date format", "Keep as numeric"), title = "That date format did not work! Would you like to: ") - 1
+                  halt <- utils::menu(c("Try another date format", "Keep as numeric"), title = "That date format did not work! Would you like to: ") - 1
                 )
               }
 

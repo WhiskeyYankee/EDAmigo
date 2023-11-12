@@ -10,8 +10,9 @@
 
 .tryDate <- function(column, dateForm){
   original <- column
+  print(original)
   for (datefrm in dateForm){
-    if (sum(grepl("\\d", column)) == length(na.omit(column))){
+    if (sum(grepl("\\d", column)) == length(stats::na.omit(column))){
 
       dates <- try(as.Date(column, format = datefrm), silent = TRUE)
 
