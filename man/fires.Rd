@@ -17,8 +17,6 @@ A data frame with 7,240 rows and 60 columns:
 }
 \source{
 <https://data-nifc.opendata.arcgis.com/datasets/nifc::wildland-fire-incident-locations/about.>
-
-\keyword{datasets}
 }
 \usage{
 fires
