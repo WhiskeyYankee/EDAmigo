@@ -2,3 +2,5 @@
 
 export(autoDash)
 export(detectTypes)
+export(rowMax)
+export(rowMin)
