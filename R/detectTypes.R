@@ -13,19 +13,13 @@
 #'
 #' @examples
 #' # Define a random data frame with dates and categorical integers that are not properly classified
-#' df <- data.frame(matrix(rnorm(20), nrow = 10))
-#' df$Date <- rep('12/01/2014', 10)
-#' df$DOY <- rep('123', 10)
-#' df$int2cat <- rep(c(1,2,3,4,5), 2)
+#' df <- fires
 #'
 #' # View classes of the variables in the dataframe
 #' str(df)
 #'
-#' # Define the format of the dates in the dataframe
-#' dateForm <- c('%j', "%m/%d/%Y")
-#'
-#' # Clean the dataframe using a tolerance of 1%
-#' clean <- detectTypes(df, dateForm, cat_tol = 1)
+#' # Clean the dataframe using a tolerance of 50%
+#' clean <- detectTypes(df, cat_tol = 50)
 #' str(clean)
 #'
 detectTypes <- function(df, dateForm = "%m/%d/%Y", cat_tol = NULL, user_tol = 80){
