@@ -47,6 +47,7 @@ handleSpecial <- function(df, vals = "[^0-9A-Za-z.,[:space:]-]", user_level = 1)
       df[[column]] <- gsub(vals,'', df[[column]])
     }
 
- }
-  return(list(df, found, replaced))
+  }
+
+  return(list('df' = df, 'found' = found, 'replaced' = replaced))
 }
