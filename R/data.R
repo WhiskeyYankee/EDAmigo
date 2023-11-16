@@ -2,7 +2,7 @@
 #'
 #' A subset of Lending Club data which documents customer loan information
 #'
-#' @format `finance`
+#' @format
 #' A data frame with 42,537 rows and 54 columns:
 #' \describe{
 #'   \item{id, member_id}{loan and member identifiers}
@@ -65,18 +65,61 @@
 #'
 "finance"
 
-
-#' fires
+#' clean_finance
 #'
-#' A subset of the National Interagency Fire Center Wildland Fire Incident Locations data set
+#'Cleaned finance, to be deleted.
 #'
-#' @format ## `fires`
+#' @format ## `clean_finance`
 #' A data frame with 7,240 rows and 60 columns:
 #' \describe{
 #'   \item{id, member_id}{loan and member identifiers}
 #'   \item{loan_amnt}{listed amount of the loan applied for by the borrower}
 #'   \item{funded_amnt}{total amount committed to that loan at that point in time}
 #'   \item{funded_amnt_inv}{total amount committed by investors for that loan at that point in time}
+#'   ...
+#' }
+#' @source <https://data-nifc.opendata.arcgis.com/datasets/nifc::wildland-fire-incident-locations/about.>
+#'
+#'
+"clean_finance"
+
+#' fires
+#'
+#' A subset of the National Interagency Fire Center Wildland Fire Incident Locations data set, from Columbus,OH and Denver, CO which are on similar latitudes.
+#'
+#' @format
+#' A data frame with 623 rows and 30 columns:
+#' \describe{
+#'   \item{Lat}{latitude of fire center}
+#'   \item{Long}{longitude of fire center}
+#'   \item{Region}{D = Denver,CO;  C = Columbus, OH}
+#'   \item{UniqueFireIdentifier}{unique identification code for each fire}
+#'   \item{ContainmentDateTime}{date and time of fire containment}
+#'   \item{ControlDateTime}{date and time of control of fire}
+#'   \item{IncidentSize}{number of acres of incident}
+#'   \item{DispatchCenterID}{identification code of the dispatching center}
+#'   \item{FireCause}{overall category of the cause of the fire: human, natural, undetermined, unknown}
+#'   \item{FireCauseGeneral}{general cause of fire within the specified overall cateogory}
+#'   \item{FireCauseSpecific}{specific cause of the fire}
+#'   \item{FireDepartmentID}{unique identifier of the responding fire department}
+#'   \item{FireDiscoveryDateTime}{date and time of fire discovery}
+#'   \item{FireOutDateTime}{date and time of fire out}
+#'   \item{IncidentName}{name of the fire incident, if applicable}
+#'   \item{IncidentShortDescription}{description of the fire incident}
+#'   \item{IncidentTypeCategory}{type of fire, wf = wildfire; rx = prescribed fire}
+#'   \item{InitialResponseAcres}{an estimate of acres burning at the time of initial response, when the IC arrives and performs initial size up.The estimate should include number of acres within the current perimeter of a specific, individual incident, including unburned and unburnable islands}
+#'   \item{InitialResponseDateTime}{date and time of initial response}
+#'   \item{IsMultiJurisdictional}{indicates if the incident covers multiple jurisdictions}
+#'   \item{IsReimbursable}{indicates the cost of an incident may be another agency’s responsibility}
+#'   \item{LocalIncidentIdentifier}{number or code that uniquely identifies an incident for a particular local fire management organization within a particular calendar year}
+#'   \item{POOCounty}{county name identifying the county or equivalent entity at point of origin designated at the time of collection}
+#'   \item{POODispatchCenterID}{unique identifier for the dispatch center that intersects with the incident point of origin}
+#'   \item{POOFips}{code which uniquely identifies counties and county equivalents.  The first two digits are the FIPS State code and the last three are the county code within the state}
+#'   \item{POOJurisdictionalUnit}{NWCG Unit Identifier to identify the unit with jurisdiction for the land where the point of origin falls.}
+#'   \item{POOLandownerCategory}{more specific classification of land ownership within land owner kinds identifying the deeded owner at the point of origin at the time of the incident}
+#'   \item{POOLandownerKind}{broad classification of land ownership identifying the deeded owner at the point of origin at the time of the incident}
+#'   \item{POOProtectingUnit}{NWCG Unit responsible for providing direct incident management and services to a an incident pursuant to its jurisdictional responsibility or as specified by law, contract or agreement}
+#'   \item{POOState}{state alpha code identifying the state or equivalent entity at point of origin}
 #'   ...
 #' }
 #' @source <https://data-nifc.opendata.arcgis.com/datasets/nifc::wildland-fire-incident-locations/about.>

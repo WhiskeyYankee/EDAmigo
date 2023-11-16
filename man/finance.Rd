@@ -5,7 +5,6 @@
 \alias{finance}
 \title{finance}
 \format{
-`finance`
 A data frame with 42,537 rows and 54 columns:
 \describe{
   \item{id, member_id}{loan and member identifiers}
