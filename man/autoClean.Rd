@@ -15,7 +15,20 @@ autoClean(
 )
 }
 \arguments{
-\item{user_level}{}
+\item{df}{A dataframe.}
+
+\item{dateForm}{A string, or vector of strings, indicating the format of any dates contained in the dataframe.}
+
+\item{cat_tol}{A numeric value indicating the tolerance of unique integer values to automatically coerce a column to a categorical variable. Report in percent from 0 to 100.}
+
+\item{user_tol}{A numeric value indicating the tolerance to receive user input prompts to assist in selecting which integer columns should be coerced to categorical, date, or retain as an integer. Report in percent from 0 to 100.}
+
+\item{vals}{A gsub formatted list of characters to keep or remove.}
+
+\item{user_level}{An indicator of whether the user will provide input or if the user would like to fully automate the removal of special characters.}
+}
+\value{
+A dataframe with special characters removed and column types set to the appropriate class.
 }
 \description{
 autoClean
