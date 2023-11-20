@@ -9,8 +9,19 @@ detectMissing(df, drop_tol = NULL, user_level = 1)
 \arguments{
 \item{df}{A dataframe.}
 
-\item{user_level}{An indicator of whether the user will provide input or if the user would like to fully automate the removal of special characters.}
+\item{drop_tol}{A percent tolerance to automatically drop columns with percent missing values greater than or equal to this value.}
+
+\item{user_level}{An indicator of whether the user will provide input or if the user would like to fully automate the process, 1 indicates user interaction.}
+}
+\value{
+The dataframe with dropped or imputated missing values.
 }
 \description{
 detectMissing
+}
+\examples{
+df <- fires
+out <- detectMissing(df, drop_tol = 80)
+str(out$df)
+
 }
