@@ -11,6 +11,7 @@
 #' df <- fires
 #' out <- detectMissing(df, drop_tol = 80)
 #' str(out$df)
+#'
 detectMissing <- function(df, drop_tol = NULL, user_level = 1 ){
 
   # Calculate the percentage of missing values in each column of the dataframe and save information to missing_stats
@@ -22,11 +23,6 @@ detectMissing <- function(df, drop_tol = NULL, user_level = 1 ){
     above_tolerance <- apply(missing_stats, 1, function(x) ifelse(x[['percent_missing']] < drop_tol, x, NA))
     df <- df[which(names(df) == above_tolerance)]
   }
-
-
-
-
-
 
   return(list('df' = df, 'missing_stats' = missing_stats))
 
