@@ -7,7 +7,9 @@
 detectMissing(df, drop_tol = NULL, user_level = 1)
 }
 \arguments{
-\item{user_level}{}
+\item{df}{A dataframe.}
+
+\item{user_level}{An indicator of whether the user will provide input or if the user would like to fully automate the removal of special characters.}
 }
 \description{
 detectMissing

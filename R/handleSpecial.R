@@ -2,7 +2,7 @@
 #'
 #' @param df A dataframe.
 #' @param vals A gsub formatted list of characters to keep or remove.
-#' @param user_level An indicator of whether the user will provide input or if the user would like to fully automate the removal of special characters.
+#' @param user_level An indicator of whether the user will provide input or if the user would like to fully automate the removal of special characters, 1 indicates user interaction.
 #'
 #' @return The dataframe without special characters, a dataframe containing the list of all found special characters, and a dataframe with a list of all removed special characters.
 #' @export
