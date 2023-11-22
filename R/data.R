@@ -171,4 +171,4 @@
 #' @source <https://data-nifc.opendata.arcgis.com/datasets/nifc::wildland-fire-incident-locations/about.>
 #'
 #'
-"cleaned_fires"
+"clean_fires"

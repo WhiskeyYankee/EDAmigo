@@ -1,10 +1,10 @@
 #' @title detectTypes
 #'
-#' @description 'detectTypes' takes a raw dataframe and coerces variables to the appropriate class.
+#' @description 'detectTypes' takes a dataframe and coerces columns to the appropriate class. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class.
 #'
 #' @param df A dataframe with any combination of variable classes, dates must be properly classified as dates.
 #' @param factor_tol A numeric value indicating the tolerance to automatically coerce a column to a factor. Report in percent from 0 to 100.
-#' @param user_tol A numeric value indicating the tolerance to receive user input prompts to assist in selecting which integer columns should be coerced to categorical, date, or retain as an integer. Report in percent from 0 to 100.
+#' @param user_tol A numeric value indicating the tolerance to receive user input prompts to assist in selecting which columns should be coerced to another class. Report in percent from 0 to 100.
 #'
 #' @return 'df'= The dataframe with all variables coerced, 'date_times' = A dataframe with only the date/time columns, 'numbers' = A dataframe with only the numeric columns,
 #'  'characters' = A dataframe with only char columns, 'factors' = A dataframe with only the factor columns, 'typeStats' = A dataframe listing the percentage of unique values in each column)
@@ -12,7 +12,7 @@
 #' @export
 #'
 #' @examples
-#' # Define a random data frame with dates and categorical integers that are not properly classified
+#' # Define the dataframe to be properly classified.
 #' df <- fires
 #'
 #' # View classes of the variables in the dataframe
@@ -22,6 +22,8 @@
 #' clean <- detectTypes(df, factor_tol = 10, user_tol = 10)
 #' str(clean$df)
 #'
+#' # View information about the type coercions
+#' clean$type_stats
 detectTypes <- function(df, factor_tol = NULL, user_tol = 30){
 
   n <- nrow(df)
@@ -47,16 +49,20 @@ detectTypes <- function(df, factor_tol = NULL, user_tol = 30){
   # If user supplies factor_tol, coerce applicable columns to factor
   if (!is.null(factor_tol)){
 
-    for (column in names(not_nums)){
 
+    for (column in names(not_nums)){
+      # If the column has less % unique values than the factor_tol, coerce to a factor
+      # Remove the column from not_nums and add to factors dataframe
       if (typeStats[column, 'percent_unique'] <= factor_tol){
         factors[[column]] <- as.factor(df[[column]])
         not_nums <- not_nums[, !(names(not_nums) %in% column)]
       }
     }
 
-    for (column in names(nums)){
 
+    for (column in names(nums)){
+      # If the column has less % unique values than the factor_tol, coerce to a factor
+      # Remove the column from nums and add to factors dataframe
       if (typeStats[column, 'percent_unique'] <= factor_tol){
         factors[[column]] <- as.factor(df[[column]])
         nums <- nums[, !(names(nums) %in% column)]
@@ -66,7 +72,7 @@ detectTypes <- function(df, factor_tol = NULL, user_tol = 30){
 
 
 
-  # Iterate through non-numeric columns to identify any factors
+  # Iterate through non-numeric columns to request user input for factor coercion, using user_tol %
   for (column in names(not_nums)){
 
     to_type = 0
@@ -82,12 +88,16 @@ detectTypes <- function(df, factor_tol = NULL, user_tol = 30){
 
   }
 
-  # Iterate through columns that are numbers to identify integers and determine if they are true integers
+
+
+  # Iterate through non-numeric columns to request user input for integer coercion to char, factor, using user_tol %
   for (column in names(nums)){
+
     if (sum(df[[column]] %% 1, na.rm= TRUE) == 0){ # Identify any columns of all integers
 
       to_type = 0
 
+      # If column % unique is less than user_tol, request user input for coercion
       if (typeStats[column, 'percent_unique'] <= user_tol){
         to_type <- utils::menu(c('Character','Factor', 'Keep as an Integer!'), title = cat(column, ' contains ', typeStats[column, 'percent_unique'],'% unique values. Is this:'))
       }
