@@ -15,12 +15,17 @@
 #' cleaned <- autoClean(fires)
 autoClean <- function(df, dateForm = "%m/%d/%Y", cat_tol = NULL, user_tol = 80, vals = "[^0-9A-Za-z.,[:space:]-]", drop_tol = NULL, user_level = 0){
 
-    clearSpecial <- handleSpecial(df, vals, user_level)$df
+    # Handle special characters. Save output as individual variables to pass out.
+    specialOutput <- handleSpecial(df, vals, user_level)
+    clearSpecial <- specialOutput$df
+    specialFound <- specialOutput$found
+    specialRemoved <- specialOutput$removed
 
-    set_types <- detectTypes(clearSpecial, dateForm, cat_tol, user_tol)
+    set_types <- detectTypes(clearSpecial, factor_tol, user_tol)
 
-    clean <- detectMissing(df, drop_tol , user_level)$df
+    clean <- handleMissing(df, drop_tol , user_level)$df
 
+    return_list <- list('cleanDf' = clean, 'cleared')
     return(clean)
 
 }
