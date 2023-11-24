@@ -1,20 +1,55 @@
-boxCox = function( X, lambda = NULL, eps = 0.01){
+boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001){
+  # defults:
+  lambda = NULL; cols = NULL; alpha = 0.001
+  fnct_start <<- Sys.time()
   # Get Helper Function
   source("R/rowMin.R")
 
-  # Determin which columns are numeric
-  num_col = sapply(X, class) == "numeric"
+  # Get the Names if they exist
+  # Determine which columns are numeric
+  if( is.matrix(X) & is.numeric(X)){ num_col = rep(TRUE, ncol(X))
+    col_names = colnames(X)}
+  if( is.data.frame(X) ) {num_col = sapply(X, class) %in% c("integer","numeric")
+    col_names = names(X)}
+
+  # If there are no column names, set to NA
+  if(is.null(col_names)){col_names = rep(NA, ncol(X))}
+
+  # Check that alpha is non-zero number
+  if(!is.numeric(alpha)){stop("alpha must be a non-zero number")} else {if(alpha <= 0){{stop("alpha must be a non-zero number")}}}
+
+  # Lambda Checks
+  if(!is.null(lambda) & !is.numeric(lambda)){
+    lambda = NULL
+    warning("The lambda provided is not a numeric vector, default will be used")
+  }
+  if(is.null(lambda)) { lambda = seq(-3,3,0.01) }
+
+
+  # If cols is supplied, check that the names provided exist in the data and that
+  if( !is.null(cols) ){
+    if(class(cols) == "character"){
+      if( !any(names(X) %in% cols) ){ stop("None of the column names provided exist in the indicated dataset.")}
+      if( !any(names(X) %in% cols) ){ stop("None of the column names provided exist in the indicated dataset.")}
+      cols = which(cols == names(X))
+      }
+    if( class(cols) %in% c("integer","numeric") ){
+      if(!all(cols %in% 1:ncol(X))){ stop("Column indices provide are outside of the domain of X")}
+    }
+    if(!all(num_col[cols])){warning("Not all of the columns specified are numeric, only numeric columns will be used.")}
+    cols = cols[ num_col[ cols ]]
+  }
+
+  # if cols is not supplied, use all of the numeric columns
+  if(is.null(cols)){ cols = (1:ncol(X))[num_col]}
+
 
   # Set X to a matrix of the numeric column
-  X = as.matrix(X[ , num_col])
+  X = as.matrix(X[ , cols ])
 
-  # Determine the Dimensions of the Matrix X
+  # Get the Dimensions of the Matrix X
   n = nrow(X)
   p = ncol(X)
-
-  # [TODO] if lambda is null set to...
-  lambda = seq(-3,3,0.01)
-
 
   # Get minimum value of each predictor
   factor_min = rowMin(t(X))$min_value
@@ -22,10 +57,12 @@ boxCox = function( X, lambda = NULL, eps = 0.01){
   # Determine Lambda 2
   ## Initialize Lambda 2 to all 0s
   lambda_2 = rep( 0 , p)
-  ## If there are 0s set the Lambda 2 to 0.001
-  lambda_2[ factor_min == 0 ] = factor_min[ factor_min == 0 ] + 0.001
-  ## If there are negative values,
-  lambda_2[ factor_min < 0 ] = -1*factor_min[ factor_min < 0 ] + 0.001
+
+  ## If there are 0s set the Lambda 2 to alpha
+  lambda_2[ factor_min == 0 ] = factor_min[ factor_min == 0 ] + alpha
+
+  ## If there are negative values set to:
+  lambda_2[ factor_min < 0 ] = -1*factor_min[ factor_min < 0 ] + alpha
 
   # shift data
   X_shift = X +  matrix( 1, nrow = n) %*% lambda_2
@@ -34,18 +71,18 @@ boxCox = function( X, lambda = NULL, eps = 0.01){
   geom_mean = exp( colMeans( log( X_shift ) , na.rm =  TRUE ))
   geom_mean_mat = matrix(1, nrow = length(lambda)) %*% geom_mean
 
-  # Make powers matrix
-  ##powers =  lambda %*% matrix(1, ncol= p)
-  ##powers = 2 * (powers - 1)
-
   # Set up lambda matrix and Matrix to hold results
   lambda_mat = matrix(1, nrow = n) %*% lambda
   logLik_mat = matrix(0, nrow = length(lambda), ncol = p)
-  results = matrix(0 , nrow = p, ncol = 3)
+  results = matrix(0 , nrow = p, ncol = 6)
+  #transformations = sort(unique(c(seq(-10, 10, 1/2), seq(-10, 10, 1/3), seq(-10, 10, 1/4))))
+
 
 # Loop through each predictor
   for(i in 1:p){
     #i = 1 # Testing only
+    # get the start time
+    if(i == 1){bx_start = Sys.time()}
 
     # Set up X matrix for log-lik calculations
     X_mat =  X_shift[,i, drop = FALSE] %*% matrix(1, ncol = length(lambda))
@@ -66,16 +103,82 @@ boxCox = function( X, lambda = NULL, eps = 0.01){
     logLike = (-n/2)*(log( 2 * pi* X_var) +1) +n*(lambda - 1) * log(geom_mean[i])
 
     # Determine CI and log-likelihood prediction
-    ci_ll = min(which(abs(logLike-(max(logLike)-.5*qchisq(0.95,1)))<=eps))
-       ll = which.max(logLike)
-    ci_ul = max(which(abs(logLike-(max(logLike)-.5*qchisq(0.95,1)))<=eps))
+    mx = which.max(logLike)
+    logLike_mx = logLike[mx]
+    lambda_mx = lambda[mx]
 
-    results[ i , 1] = ifelse(ci_ll< ll, lambda[ci_ll], lambda[ll])
-    results[ i , 2] = lambda[ll]
-    results[ i , 3] = ifelse(ci_ul> ll, lambda[ci_ul], lambda[ll])
+    ci_ll = suppressWarnings( max( which(logLike[1:mx ] <= (logLike_mx - .5*qchisq(0.95,1)))))
+    lambda_ll = lambda[ci_ll]
 
-     # Store the results
+    ci_ul = suppressWarnings( min( which(logLike[mx:length(lambda) ] <= (logLike_mx - .5*qchisq(0.95,1)))))
+    lambda_ul = lambda[ci_ul + mx -1]
+
+    # Suggest a standard transformation
+    ## If boxCox didn't converge in range, don't suggest a transformation, otherwise select the simplest transformation in the CI range
+    if(is.na(lambda_ll) | is.na(lambda_ul)){
+      lambda_suggest = NA
+    } else if(lambda_ll <= round(lambda_mx) & round(lambda_mx) <= lambda_ul) {
+        lambda_suggest = round(lambda_mx)
+    } else if(lambda_ll <= round(lambda_mx*2)/2 & round(lambda_mx*2)/2 <= lambda_ul) {
+      lambda_suggest = round(lambda_mx*2)/2
+    } else if(lambda_ll <= round(lambda_mx*3)/3 & round(lambda_mx*3)/3 <= lambda_ul) {
+      lambda_suggest = round(lambda_mx*3)/3
+    } else if(lambda_ll <= round(lambda_mx*2)/2 & round(lambda_mx*2)/2 <= lambda_ul) {
+      lambda_suggest = round(lambda_mx*4)/4
+    } else {lambda_suggest = lambda_mx }
+
+    ##
+
+    #suggested_trans = transformations[lambda_ll <= transformations & transformations <= lambda_ul]
+    #if(length(suggested_trans) == 0){lambda_suggest = lambda_mx}else{suggest = which.min((suggested_trans -lambda_mx)^2 )
+    #lambda_suggest = suggested_trans[suggest]}
+
+    #Old Method
+      #min(which(abs(logLike-(max(logLike)-.5*qchisq(0.95,1)))<=eps))
+      #max(which(abs(logLike-(max(logLike)-.5*qchisq(0.95,1)))<=eps))
+
+    # Store the results
+    results[ i , 1] = lambda_2[i]
+    results[ i , 2] = lambda_ll
+    results[ i , 3] = lambda_mx
+    results[ i , 4] = lambda_ul
+    results[ i , 5] = lambda_suggest
+
+
     logLik_mat[ , i ] = logLike
+
+    # If the estimated run time is more than 3 seconds, show progress bar
+    if(i == 1){bx_end = Sys.time()
+               show_progress = FALSE}
+    if(i == 1 & difftime(bx_end, bx_start, "secs")*p > 3){
+      show_progress = TRUE
+      # Set progress bar
+      pb = txtProgressBar(
+        min = 0
+        ,max = p -1
+        ,style = 3
+        ,width = 50
+        ,char = "=")}
+    if(i >1 & show_progress == TRUE){setTxtProgressBar(pb, i)}
   }
-return(list(results = results, logLik_mat = logLik_mat))
+if(show_progress == TRUE){close(pb)}
+
+  boxCox_Trans = data.frame(
+     col_num = cols
+    ,col_name = col_names[cols]
+    ,lambda_2 = results[ , 1]
+    ,lambda_1 = results[ , 3]
+    ,lambda_1_ll = results[ , 2]
+    ,lambda_1_ul = results[ , 4]
+    ,lambda_1_suggest = results[ , 5]
+  )
+
+if(any(is.na(boxCox_Trans$lambda_1_ll)) | any(is.na(boxCox_Trans$lambda_1_ll))){
+  warning("One or more of the variables did not converge in the spcified lambda_1 range")
+}
+
+fnct_end <<- Sys.time()
+
+return(list(boxCox_Trans = boxCox_Trans, lambda_1 = lambda,  logLik_mat = logLik_mat))
+
 }
