@@ -1,5 +1,5 @@
 boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001){
-  # defults:
+  # defaults:
   lambda = NULL; cols = NULL; alpha = 0.001
   fnct_start <<- Sys.time()
   # Get Helper Function
@@ -74,13 +74,13 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001){
   # Set up lambda matrix and Matrix to hold results
   lambda_mat = matrix(1, nrow = n) %*% lambda
   logLik_mat = matrix(0, nrow = length(lambda), ncol = p)
-  results = matrix(0 , nrow = p, ncol = 6)
-  #transformations = sort(unique(c(seq(-10, 10, 1/2), seq(-10, 10, 1/3), seq(-10, 10, 1/4))))
+  results = matrix(0 , nrow = p, ncol = 5)
+  transformations = matrix(NA, nrow = n, ncol = p)
 
 
 # Loop through each predictor
   for(i in 1:p){
-    #i = 1 # Testing only
+    #i = 2 # Testing only
     # get the start time
     if(i == 1){bx_start = Sys.time()}
 
@@ -123,28 +123,27 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001){
       lambda_suggest = round(lambda_mx*2)/2
     } else if(lambda_ll <= round(lambda_mx*3)/3 & round(lambda_mx*3)/3 <= lambda_ul) {
       lambda_suggest = round(lambda_mx*3)/3
-    } else if(lambda_ll <= round(lambda_mx*2)/2 & round(lambda_mx*2)/2 <= lambda_ul) {
+    } else if(lambda_ll <= round(lambda_mx*4)/4 & round(lambda_mx*4)/4 <= lambda_ul) {
       lambda_suggest = round(lambda_mx*4)/4
     } else {lambda_suggest = lambda_mx }
 
-    ##
+    ## Store the transformed transformations associated with lambda_suggest
+    if(lambda_suggest %in% lambda){
+      transformations[, i ] =  X_trans[,which(lambda == lambda_suggest)]
+    } else if(!is.na(lambda_suggest)) {
+      if(lambda_suggest == 0){ transformations[, i ] = log(X_shift[,i, drop = FALSE])} else{
+      transformations[, i ] =  (X_shift[, i, drop = FALSE]^lambda_suggest - 1)/lambda_suggest}
+    }
 
-    #suggested_trans = transformations[lambda_ll <= transformations & transformations <= lambda_ul]
-    #if(length(suggested_trans) == 0){lambda_suggest = lambda_mx}else{suggest = which.min((suggested_trans -lambda_mx)^2 )
-    #lambda_suggest = suggested_trans[suggest]}
 
-    #Old Method
-      #min(which(abs(logLike-(max(logLike)-.5*qchisq(0.95,1)))<=eps))
-      #max(which(abs(logLike-(max(logLike)-.5*qchisq(0.95,1)))<=eps))
-
-    # Store the results
+    # Store the resulting parameters from the BoxCox transformation
     results[ i , 1] = lambda_2[i]
     results[ i , 2] = lambda_ll
     results[ i , 3] = lambda_mx
     results[ i , 4] = lambda_ul
     results[ i , 5] = lambda_suggest
 
-
+    # Store the log likelihood calculations
     logLik_mat[ , i ] = logLike
 
     # If the estimated run time is more than 3 seconds, show progress bar
@@ -163,22 +162,26 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001){
   }
 if(show_progress == TRUE){close(pb)}
 
-  boxCox_Trans = data.frame(
+  boxCox_Results = data.frame(
      col_num = cols
     ,col_name = col_names[cols]
-    ,lambda_2 = results[ , 1]
-    ,lambda_1 = results[ , 3]
+    ,lambda_2_selected = results[ , 1]
+    #,lambda_1 = results[ , 3]
     ,lambda_1_ll = results[ , 2]
     ,lambda_1_ul = results[ , 4]
-    ,lambda_1_suggest = results[ , 5]
+    ,lambda_1_selected = results[ , 5]
   )
 
-if(any(is.na(boxCox_Trans$lambda_1_ll)) | any(is.na(boxCox_Trans$lambda_1_ll))){
+if(any(is.na(boxCox_Results$lambda_1_ll)) | any(is.na(boxCox_Results$lambda_1_ll))){
   warning("One or more of the variables did not converge in the spcified lambda_1 range")
 }
 
+# Select only valid transformations
+transformations = as.data.frame(transformations[ , !(is.na(boxCox_Results$lambda_1_selected)) ])
+names(transformations) = boxCox_Results$col_name[ !(is.na(boxCox_Results$lambda_1_selected))  ]
+
 fnct_end <<- Sys.time()
 
-return(list(boxCox_Trans = boxCox_Trans, lambda_1 = lambda,  logLik_mat = logLik_mat))
+return(list(boxCox_Results = boxCox_Results, lambda_1 = lambda,  logLik_mat = logLik_mat, transformations = transformations))
 
 }
