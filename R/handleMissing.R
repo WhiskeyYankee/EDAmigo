@@ -12,7 +12,7 @@
 #' out <- handleMissing(df, drop_tol = 80, user_level = 0)
 #' str(out$df)
 #'
-handleMissing <- function(df, drop_tol = NULL, user_level = 1 ){
+handleMissing <- function(df, drop_tol = NULL, user_level = 1 , drop_row = TRUE, drop_col = FALSE){
 
   # Calculate the percentage of missing values in each column of the dataframe and save information to missing_stats
   percent_missing <- sapply(df, function(column) 100* sum(is.na(column)| column == '')/ length(column))
