@@ -2,23 +2,23 @@
 #'
 #' @param df A dataframe.
 #' @param vals A gsub formatted list of characters to keep or remove.
-#' @param user_level An indicator of whether the user will provide input or if the user would like to fully automate the removal of special characters, 1 indicates user interaction.
+#' @param special_user_level An indicator of whether the user will provide input or if the user would like to fully automate the removal of special characters, 1 indicates user interaction.
 #'
 #' @return The dataframe without special characters, a dataframe containing the list of all found special characters, and a dataframe with a list of all removed special characters.
 #' @export
 #'
 #' @examples
-#' out <- handleSpecial(finance, user_level = 0)
+#' out <- handleSpecial(finance,special_user_level = 0)
 #' out[[2]]
 #'
-handleSpecial <- function(df, vals = "[^0-9A-Za-z.,[:space:]-]", user_level = 1){
+handleSpecial <- function(df, vals = "[^0-9A-Za-z.,[:space:]-]", special_user_level = 1){
 
   special_found_replaced <- data.frame(special_found = character(), special_replaced = character())
   handle <- 0
 
   for (column in names(df)){
 
-    if( user_level == 1){
+    if( special_user_level == 1){
 
         # If the dataframe column contains special characters
       if (sum(grepl(vals, df[[column]])) > 0){

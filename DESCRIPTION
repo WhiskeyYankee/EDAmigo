@@ -15,4 +15,7 @@ Depends:
 Imports: dplyr,
   methods,
   utils
-
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
