@@ -74,7 +74,7 @@ handleMissing <- function(df, no_drop = FALSE, no_impute = FALSE, drop_col_tol =
     if (missing_user_level == 1){
       print(missing_stats)
       cat('\n')
-      input <- utils::menu(c("Drop all missing", "Select which to drop", "Set a drop tolerance", "See missing by row"),title = "Above are the percent missing by column for your dataframe. Which would you like to do? ")
+      input <- utils::menu(c("Drop all missing", "Select which to drop", "Set a drop tolerance", "See missing by row", "None, I'm done dropping"),title = "Above are the percent missing by column for your dataframe. Which would you like to do? ")
 
       # If the user wants to drop all columns with any missing values.
       if (input == 1){
@@ -133,7 +133,7 @@ handleMissing <- function(df, no_drop = FALSE, no_impute = FALSE, drop_col_tol =
 
       }
 
-          # Update stats with % missing after dropping
+    # Update stats with % missing after dropping
     after_drop_percent <- data.frame(after_drop_percent = round(sapply(df, function(column) {
       if (inherits(column, "POSIXlt") | inherits(column, "Date") |inherits(column, "POSIXct")) {
         return(100 * sum(is.na(column)) / length(column))
@@ -154,7 +154,29 @@ handleMissing <- function(df, no_drop = FALSE, no_impute = FALSE, drop_col_tol =
   # Once drop process complete, or if the user does not want to drop columns or rows
   if (no_impute == FALSE){
 
-    print(missing_stats)
+    # Save column order to reorder output prior to return
+    column_order <- colnames(df)
+
+    # Separate out data types
+    dates_times <- names(df[sapply(df, function(column) inherits(column, 'Date')) | sapply(df, function(column) inherits(column, 'POSIXct')) | sapply(df, function(column) inherits(column, 'POSIXlt'))])
+    missing_stats[which(missing_stats$variable %in% dates_times), 'impute method'] <- 'None_Date Type'
+
+    factors <- names(df[sapply(df, function(column) inherits(column, 'factor'))])
+    missing_stats[which(missing_stats$variable %in% factors), 'impute method'] <- 'None_Factor'
+
+    nums <- names(dplyr::select_if(df, is.numeric))
+
+    not_nums <- names(df[!colnames(df) %in% nums & !colnames(df) %in% dates_times & !colnames(df) %in% factors])
+    missing_stats[which(missing_stats$variable %in% not_nums), 'impute method'] <- 'None_Not Numeric'
+
+    for (column in nums){
+      if (as.numeric(missing_stats[which(missing_stats$variable == column), 'after_drop_percent']) > 0){
+        df[is.na(df[[column]]), column] <- mean(df[[column]], na.rm = TRUE)
+        missing_stats[which(missing_stats$variable == column), 'impute method'] <- 'Mean'
+      }
+      else{ missing_stats[which(missing_stats$variable == column), 'impute method'] <- 'No Missing Values'}
+
+    }
 
   }
 
@@ -166,7 +188,8 @@ handleMissing <- function(df, no_drop = FALSE, no_impute = FALSE, drop_col_tol =
       return(100 * sum(is.na(column) | column == '') / length(column))
     }
   }), 1))
-  missing_stats <- merge(missing_stats, end_percent_missing, by = 'row.names', all =TRUE, no.dups = TRUE)
+  end_percent_missing$variable <- rownames(end_percent_missing)
+  missing_stats <- merge(missing_stats, end_percent_missing, by = 'variable', all =TRUE, no.dups = TRUE)
   missing_stats[is.na(missing_stats)] <- 'dropped'
 
   return(list('df' = df, 'missing_stats' = missing_stats, 'dropped_cols'= dropped_cols, 'dropped_rows'= dropped_rows))
