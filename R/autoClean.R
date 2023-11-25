@@ -19,7 +19,7 @@ autoClean <- function(df, factor_tol = NULL, user_tol = 30, vals = "[^0-9A-Za-z.
     clearSpecial <- specialOutput$df
     special_found_replaced <- specialOutput$found_replaced
 
-
+    # Coerce column types to proper class.
     set_types <- detectTypes(clearSpecial, factor_tol, user_tol)
     dates_times <- set_types$date_times
     numbers <- set_types$numbers
@@ -28,11 +28,13 @@ autoClean <- function(df, factor_tol = NULL, user_tol = 30, vals = "[^0-9A-Za-z.
     typed_df <- set_types$df
     typeStats <- set_types$type_stats
 
+    # Handle missing values, drop or impute.
     clean <- handleMissing(typed_df, drop_tol , user_level)
     missingStats <- clean$missing_stats
     cleanDf <- clean$df
 
-    return_list <- list('cleanDf' = cleanDf, 'cleared' = clearSpecial, 'typed'= typed_df, 'special_found_replaced' = special_found_replaced, 'typeStats'= typeStats, 'missingStats'= missingStats)
+    # Return all
+    return_list <- list('clean_df' = cleanDf, 'no_special_df' = clearSpecial, 'typed_df'= typed_df, 'special_found_replaced' = special_found_replaced, 'type_stats'= typeStats, 'missing_stats'= missingStats)
 
     return(clean)
 
