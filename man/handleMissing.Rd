@@ -4,7 +4,13 @@
 \alias{handleMissing}
 \title{handleMissing}
 \usage{
-handleMissing(df, drop_tol = NULL, user_level = 1)
+handleMissing(
+  df,
+  drop_tol = NULL,
+  user_level = 1,
+  drop_row = TRUE,
+  drop_col = FALSE
+)
 }
 \arguments{
 \item{df}{A dataframe.}
@@ -20,7 +26,10 @@ The dataframe with dropped or imputated missing values.
 handleMissing
 }
 \examples{
-df <- fires
+# Define the dataframe, clear of special characters
+df <- handleSpecial(fires,user_level =0)$df
+
+# Store function results
 out <- handleMissing(df, drop_tol = 80, user_level = 0)
 str(out$df)
 
