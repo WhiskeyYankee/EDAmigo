@@ -5,7 +5,6 @@
 \alias{clean_finance}
 \title{clean_finance}
 \format{
-## `clean_finance`
 A data frame with 7,240 rows and 60 columns:
 \describe{
   \item{id, member_id}{loan and member identifiers}

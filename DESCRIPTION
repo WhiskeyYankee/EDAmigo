@@ -14,8 +14,5 @@ Depends:
     R (>= 2.10)
 Imports: dplyr,
   methods,
-  rmarkdown,
-  utils,
-  flexdashboard
-Suggests:
-    browseURL
+  utils
+

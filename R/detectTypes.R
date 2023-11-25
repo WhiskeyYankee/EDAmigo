@@ -1,86 +1,131 @@
 #' @title detectTypes
 #'
-#' @description 'detectTypes' takes a raw dataframe and coerces variables to the appropriate class.
+#' @description 'detectTypes' takes a dataframe and coerces columns to the appropriate class. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class.
 #'
-#' @param df A dataframe with any combination of variable classes.
-#' @param dateForm A string, or vector of strings, indicating the format of any dates contained in the dataframe.
-#' @param cat_tol A numeric value indicating the tolerance of unique integer values to automatically coerce a column to a categorical variable. Report in percent from 0 to 100.
-#' @param user_tol A numeric value indicating the tolerance to receive user input prompts to assist in selecting which integer columns should be coerced to categorical, date, or retain as an integer. Report in percent from 0 to 100.
+#' @param df A dataframe with any combination of variable classes, dates must be properly classified as dates.
+#' @param factor_tol A numeric value indicating the tolerance to automatically coerce a column to a factor. Report in percent from 0 to 100.
+#' @param user_tol A numeric value indicating the tolerance to receive user input prompts to assist in selecting which columns should be coerced to another class. Report in percent from 0 to 100.
 #'
-#' @return The dataframe with columns coerced to the appropriate classes.
+#' @return 'df'= The dataframe with all variables coerced, 'date_times' = A dataframe with only the date/time columns, 'numbers' = A dataframe with only the numeric columns,
+#'  'characters' = A dataframe with only char columns, 'factors' = A dataframe with only the factor columns, 'typeStats' = A dataframe listing the percentage of unique values in each column)
 #'
 #' @export
 #'
 #' @examples
-#' # Define a random data frame with dates and categorical integers that are not properly classified
+#' # Define the dataframe to be properly classified.
 #' df <- fires
 #'
 #' # View classes of the variables in the dataframe
 #' str(df)
 #'
-#' # Clean the dataframe using a tolerance of 50%
-#' clean <- detectTypes(df, cat_tol = 50)
-#' str(clean)
+#' # Clean the dataframe using a tolerance of 10%
+#' clean <- detectTypes(df, factor_tol = 10, user_tol = 10)
+#' str(clean$df)
 #'
-detectTypes <- function(df, dateForm = "%m/%d/%Y", cat_tol = NULL, user_tol = 80){
+#' # View information about the type coercions
+#' clean$type_stats
+detectTypes <- function(df, factor_tol = NULL, user_tol = 30){
+
   n <- nrow(df)
+  column_order <- names(df)
+
+  # Separate out numeric columns
   nums <- dplyr::select_if(df, is.numeric)
-  not_nums <- df[!colnames(df) %in% colnames(nums)]
 
-  # Iterate through columns that are not numbers and try to transform to a date
-  for (column in names(not_nums)){
-    not_nums[[column]] <- .tryDate(not_nums[[column]], dateForm)
-  }
+  # Separate out date columns
+  dates_times <- df[sapply(df, function(column) inherits(column, 'Date')) | sapply(df, function(column) inherits(column, 'POSIXct')) | sapply(df, function(column) inherits(column, 'POSIXlt'))]
 
-  # Iterate through columns that are numbers to identify integers and determine if they are true integers
-  for (column in names(nums)){
-    if (sum(df[[column]] %% 1, na.rm= TRUE) == 0){ # Identify any columns of all integers
-      unique_ints <- length(as.vector(unique(df[[column]])))
-      percent_unique <- 100 * (unique_ints / length(stats::na.omit(df[[column]])))
-      is_cat = 0
+  # Separate out non-numeric columns
+  not_nums <- df[!colnames(df) %in% colnames(nums) & !colnames(df) %in% colnames(dates_times)]
 
-      if (!is.null(cat_tol) ) {
-        if (percent_unique <= cat_tol){
-          nums[[column]] <- as.character(df[[column]])
-        }
-      }
-      if (!methods::is(nums[[column]], "character")){
-        if (percent_unique <= user_tol){
-          is_cat <- utils::menu(c('Categorical','Date', 'Keep as an Integer!'), title = cat(column, ' contains ', percent_unique,'% unique values. Is this:'))
-        }
+  # Define empty dataframe for factors
+  factors <- data.frame(rep(NA, n))
 
-        if (is_cat == 1){ # Set column to character type
-          nums[[column]] <- as.character(df[[column]])
-        }
+  # Find percent unique for each column
+  typeStats <- data.frame(sapply(df, function(column) (100 * (length(as.vector(stats::na.omit(unique(column)))) / length(stats::na.omit(column))))))
+  colnames(typeStats) <- 'percent_unique'
+  typeStats$original_class <- sapply(df, function(column) class(column))
 
-        if (is_cat == 2){ # Set column to Date type, using user specified format
-          dates = .tryDate(not_nums[[column]], dateForm)
-          # if the column can transform to a date, coerce to date and replace appropriate nums with date
-          if (methods::is(dates, 'Date')){
-            nums[[column]] <- dates
-          }
-          else{
-            halt = FALSE
-              while (halt == FALSE){
-                date_format <- readline(prompt ='This date does not match any of your provided date formats. What is the format of this date? Example: for day of year, provide "%j" ')
-                dates <- .tryDate(nums[[column]], date_format)
-                if (methods::is(dates, 'Date')){
-                  halt = TRUE
-                  nums[[column]] <- dates
-                }
-                else (
-                  halt <- utils::menu(c("Try another date format", "Keep as numeric"), title = "That date format did not work! Would you like to: ") - 1
-                )
-              }
+  # If user supplies factor_tol, coerce applicable columns to factor
+  if (!is.null(factor_tol)){
 
-          }
 
-         }
+    for (column in names(not_nums)){
+      # If the column has less % unique values than the factor_tol, coerce to a factor
+      # Remove the column from not_nums and add to factors dataframe
+      if (typeStats[column, 'percent_unique'] <= factor_tol){
+        factors[[column]] <- as.factor(df[[column]])
+        not_nums <- not_nums[, !(names(not_nums) %in% column)]
       }
     }
+
+
+    for (column in names(nums)){
+      # If the column has less % unique values than the factor_tol, coerce to a factor
+      # Remove the column from nums and add to factors dataframe
+      if (typeStats[column, 'percent_unique'] <= factor_tol){
+        factors[[column]] <- as.factor(df[[column]])
+        nums <- nums[, !(names(nums) %in% column)]
+      }
+    }
+  } # End factor_tol coercion
+
+
+
+  # Iterate through non-numeric columns to request user input for factor coercion, using user_tol %
+  for (column in names(not_nums)){
+
+    to_type = 0
+
+    if(typeStats[column, 'percent_unique'] <= user_tol){
+      to_type <- utils::menu(c('Factor', 'Keep as a string!'), title = cat(column, ' contains ', typeStats[column, 'percent_unique'],'% unique values. Is this:'))
+    }
+
+    if (to_type == 1){ # Set column to factor
+      factors[[column]] <- as.factor(df[[column]])
+      not_nums <- not_nums[, !(names(not_nums) %in% column)]
+    }
+
   }
 
-  # return transformed data
-  return(cbind(nums,not_nums))
+
+
+  # Iterate through non-numeric columns to request user input for integer coercion to char, factor, using user_tol %
+  for (column in names(nums)){
+
+    if (sum(df[[column]] %% 1, na.rm= TRUE) == 0){ # Identify any columns of all integers
+
+      to_type = 0
+
+      # If column % unique is less than user_tol, request user input for coercion
+      if (typeStats[column, 'percent_unique'] <= user_tol){
+        to_type <- utils::menu(c('Character','Factor', 'Keep as an Integer!'), title = cat(column, ' contains ', typeStats[column, 'percent_unique'],'% unique values. Is this:'))
+      }
+
+      if (to_type == 1){ # Set column to character type
+        not_nums[[column]] <- as.character(df[[column]])
+        nums <- nums[, !(names(nums) %in% column)]
+      }
+
+      if (to_type == 2){ # Set column to factor
+        factors[[column]] <- as.factor(df[[column]])
+        nums <- nums[, !(names(nums) %in% column)]
+       }
+
+    } # End if sum
+  } # End for column
+
+
+  # Drop the column of NA placeholders from factors
+  factors <- factors[,-1]
+
+  # List the new class for each column
+  typeStats$new_class <- sapply(cbind(nums, not_nums, dates_times, factors)[column_order], function(column) class(column))
+
+  # Define the return list of dataframes for output
+  return_list <- list('df'= cbind(nums, not_nums, dates_times, factors)[column_order], 'date_times' = names(dates_times), 'numbers' = names(nums), 'characters' = names(not_nums), 'factors' = names(factors), 'type_stats' = typeStats)
+  # set to column names
+
+  return(return_list)
 }
 
