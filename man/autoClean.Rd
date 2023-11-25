@@ -6,9 +6,8 @@
 \usage{
 autoClean(
   df,
-  dateForm = "\%m/\%d/\%Y",
-  cat_tol = NULL,
-  user_tol = 80,
+  factor_tol = NULL,
+  user_tol = 30,
   vals = "[^0-9A-Za-z.,[:space:]-]",
   drop_tol = NULL,
   user_level = 0
@@ -17,9 +16,7 @@ autoClean(
 \arguments{
 \item{df}{A dataframe.}
 
-\item{dateForm}{A string, or vector of strings, indicating the format of any dates contained in the dataframe.}
-
-\item{cat_tol}{A numeric value indicating the tolerance of unique integer values to automatically coerce a column to a categorical variable. Report in percent from 0 to 100.}
+\item{factor_tol}{A numeric value indicating the tolerance of unique integer values to automatically coerce a column to a categorical variable. Report in percent from 0 to 100.}
 
 \item{user_tol}{A numeric value indicating the tolerance to receive user input prompts to assist in selecting which integer columns should be coerced to categorical, date, or retain as an integer. Report in percent from 0 to 100.}
 
@@ -36,5 +33,5 @@ A dataframe with special characters removed and column types set to the appropri
 autoClean
 }
 \examples{
-cleaned <- autoClean(fires)
+cleaned <- autoClean(fires, factor_tol = 10)
 }

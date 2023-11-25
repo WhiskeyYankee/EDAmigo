@@ -8,7 +8,10 @@
 #' @export
 #'
 #' @examples
-#' df <- fires
+#' # Define the dataframe, clear of special characters
+#' df <- handleSpecial(fires,user_level =0)$df
+#'
+#' # Store function results
 #' out <- handleMissing(df, drop_tol = 80, user_level = 0)
 #' str(out$df)
 #'

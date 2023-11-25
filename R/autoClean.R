@@ -17,14 +17,22 @@ autoClean <- function(df, factor_tol = NULL, user_tol = 30, vals = "[^0-9A-Za-z.
     # Handle special characters. Save output as individual variables to pass out.
     specialOutput <- handleSpecial(df, vals, user_level)
     clearSpecial <- specialOutput$df
-    specialFound <- specialOutput$found
-    specialRemoved <- specialOutput$removed
+    special_found_replaced <- specialOutput$found_replaced
+
 
     set_types <- detectTypes(clearSpecial, factor_tol, user_tol)
+    dates_times <- set_types$date_times
+    numbers <- set_types$numbers
+    characters <- set_types$characters
+    factors <- set_types$factors
+    typed_df <- set_types$df
+    typeStats <- set_types$type_stats
 
-    clean <- handleMissing(df, drop_tol , user_level)$df
+    clean <- handleMissing(typed_df, drop_tol , user_level)
+    missingStats <- clean$missing_stats
+    cleanDf <- clean$df
 
-    return_list <- list('cleanDf' = clean, 'cleared')
+    return_list <- list('cleanDf' = cleanDf, 'cleared' = clearSpecial, 'typed'= typed_df, 'special_found_replaced' = special_found_replaced, 'typeStats'= typeStats, 'missingStats'= missingStats)
 
     return(clean)
 
