@@ -1,10 +1,18 @@
 #' handleSpecial
 #'
+#' @description 'handleSpecial' finds and removes special characters from a dataframe. The function defaults to user interaction.
+#'
 #' @param df A dataframe.
 #' @param vals A gsub formatted list of characters to keep or remove.
 #' @param special_user_level An indicator of whether the user will provide input or if the user would like to fully automate the removal of special characters, 1 indicates user interaction.
 #'
-#' @return The dataframe without special characters, a dataframe containing the list of all found special characters, and a dataframe with a list of all removed special characters.
+#' @return
+#' #' A list with the following elements:
+#' \itemize{
+#'  \item \code{df}: A dataframe with special characters removed, according to user input.
+#'  \item \code{found_replaced}: A dataframe providing details about the special characters found in each column and which characters were removed according to user input.
+#'}
+#'
 #' @export
 #'
 #' @examples
