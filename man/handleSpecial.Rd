@@ -4,23 +4,27 @@
 \alias{handleSpecial}
 \title{handleSpecial}
 \usage{
-handleSpecial(df, vals = "[^0-9A-Za-z.,[:space:]-]", user_level = 1)
+handleSpecial(df, vals = "[^0-9A-Za-z.,[:space:]-]", special_user_level = 1)
 }
 \arguments{
 \item{df}{A dataframe.}
 
 \item{vals}{A gsub formatted list of characters to keep or remove.}
 
-\item{user_level}{An indicator of whether the user will provide input or if the user would like to fully automate the removal of special characters, 1 indicates user interaction.}
+\item{special_user_level}{An indicator of whether the user will provide input or if the user would like to fully automate the removal of special characters, 1 indicates user interaction.}
 }
 \value{
-The dataframe without special characters, a dataframe containing the list of all found special characters, and a dataframe with a list of all removed special characters.
+#' A list with the following elements:
+\itemize{
+ \item \code{df}: A dataframe with special characters removed, according to user input.
+ \item \code{found_replaced}: A dataframe providing details about the special characters found in each column and which characters were removed according to user input.
+}
 }
 \description{
-handleSpecial
+'handleSpecial' finds and removes special characters from a dataframe. The function defaults to user interaction.
 }
 \examples{
-out <- handleSpecial(finance, user_level = 0)
+out <- handleSpecial(finance,special_user_level = 0)
 out[[2]]
 
 }

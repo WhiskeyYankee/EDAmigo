@@ -1,0 +1,86 @@
+---
+title: "EDAmigo Vignette"
+output: 
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{EDAmigo Vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+```
+EDAmigo is a package designed to make Exploratory Data Analysis (EDA) simple. It provides novice users with streamlined options for automatically cleaning, processing, and viewing their data. However, it also provides advanced users with the ability to perform EDA functions in an interactive manner.
+
+
+
+Begin by loading the EDAmigo package. The package comes with two example datasets: Fires and Finance. We will use the fires data for this example
+```{r setup}
+library(EDAmigo)
+
+# Define the dataframe
+df <- fires
+```
+
+The package requires all dates and times to be properly classed as 'Date', 'POSIXlt', or 'POSIXct.' Let's check the classes of our dataframe columns.
+```{r}
+str(df)
+
+```
+All of our date columns are type 'Date.' However, there are several special characters, improperly typed columns, and missing values. We can either use the autoClean() function to handle all of these situations at one time, or we can use handleSpecial(), detectTypes(), and handleMissing() individually. Let's use the autoClean() function.
+
+```{r}
+# Store output for future use.
+# Pass in:  
+  # the dataframe, 
+  # special_user_level set to 0 indicating automatic special character removal with no user interaction
+  # a factor tolerance of 1% to automatically coerce values with 1% or less unique values to factors
+  # a user tolerance of 20%, this will prompt the user for direction when a column has <= 30% unique values
+  # missing_user_level of 1, indicating that the user prefers to interact with the handleMissing() function
+
+result <- autoClean(df, special_user_level = 0, factor_tol = 10, type_user_tol = 10, missing_user_level = 0)
+```
+Now, let's examine the output of autoClean(). The function returned a list of 6 elements.
+
+
+## clean_df
+This is the resulting dataframe with special characters removed, columns coerced to an appropriate class, and missing values handled. Compared to our original dataframe, we see that 5 columns were removed and that many columns have been coerced to a different class. 
+```{r}
+# Store our clean dataframe for future use
+cleaned_fires <- result$clean_df
+str(cleaned_fires)
+
+```
+
+Now, let's look at the remaining output, which are derived from other functions.
+
+## handleSpecial() output
+This shows the special characters that were found, versus the special characters that were actually removed.
+```{r}
+# Examine results of the handleSpecial() function
+result$special_found_replaced
+```
+
+## detectTypes() output
+This output is a record of what the detectTypes() function changed. The first column indicates the % of unique values contained within the named column of the original dataframe. Next, we see the original column class, and the resulting column class.
+```{r}
+# Examine the results of the detectTypes() function
+result$type_stats
+```
+
+## handleMissing output
+Lastly, the handleMissing output includes information about which columns are dropped, and at what point in the process. 'missing_stats' includes the percent of missing values for each column throughout each step in the process. It is important to note that this output may change, depending upon the options the user inputs and/or selects during interactive sections of the function.
+
+The final list of dropped columns and dropped rows are also provided, so the user knows which rows and columns are no longer contained in the final dataframe.
+```{r}
+# Examine the results of the handleMissing() function
+result$missing_stats
+result$dropped_cols
+result$dropped_rows
+```
+
