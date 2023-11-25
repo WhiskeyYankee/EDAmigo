@@ -18,7 +18,7 @@ detectTypes(df, factor_tol = NULL, user_tol = 30)
  'characters' = A dataframe with only char columns, 'factors' = A dataframe with only the factor columns, 'typeStats' = A dataframe listing the percentage of unique values in each column)
 }
 \description{
-'detectTypes' takes a dataframe and coerces variables to the appropriate class. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class.
+'detectTypes' takes a dataframe and coerces columns to the appropriate class. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class.
 }
 \examples{
 # Define the dataframe to be properly classified.
