@@ -1,13 +1,23 @@
 #' handleMissing
 #'
-#' @param df A dataframe.
+#' @description 'handleMissing' takes a dataframe and filsl or removes missing values. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class. Function defaults to user interaction.
+#'
+#' @param df A dataframe with any combination of variable classes, dates must be properly classified as dates.
 #' @param no_drop A boolean indicating whether or not to drop values, TRUE skips all dropping and proceeds to imputation.
 #' @param no_impute A boolean indicating whether or not to impute values. TRUE skips imputation.
-#' @param drop_col_tol A percent tolerance to automatically drop columns with percent missing values greater than or equal to this value.
-#' @param drop_row_tol A percent tolerance to automatically drop rows with percent missing values greater than or equal to this value.If values are provided for both columns and rows, columns will be dropped first.
+#' @param drop_col_tol A percent tolerance to automatically drop columns with percent missing values greater than or equal to this value. Report in percent from 0 to 100.
+#' @param drop_row_tol A percent tolerance to automatically drop rows with percent missing values greater than or equal to this value.If values are provided for both columns and rows, columns will be dropped first.Report in percent from 0 to 100.
 #' @param missing_user_level An indicator of whether the user will provide input or if the user would like to fully automate the process, 1 indicates user interaction.
 #'
-#' @return The dataframe with dropped or imputated missing values.
+#' @return
+#' A list with the following elements:
+#' \itemize{
+#'  \item \code{df}:  A dataframe with missing values dropped and/or imputed, according to user input.
+#'  \item \code{missing_stats}: A dataframe providing details about which columns were dropped and what percent missing values were identified throughout several steps, according to user input. If imputation is selected, this will include the method of imputation performed on each column.
+#'  \item \code{dropped_cols}: A list of column names that were dropped from the original dataframe.
+#'  \item \code{dropped_rows}: A list of row indices that were dropped from the original dataframe.
+#'  }
+#'
 #' @export
 #'
 #' @examples
@@ -118,11 +128,11 @@ handleMissing <- function(df, no_drop = FALSE, no_impute = FALSE, drop_col_tol =
         obs_initial_percent_missing <- apply(df_temp, 1, function(x) 100 * sum(is.na(x) | x =='') / length(x))
 
         # Output a histogram of percent missing
-        par(mfrow=c(1,1))
-        hist(obs_initial_percent_missing, main = "Histogram of percent missing by rows", xlab ="Percent missing")
+        graphics::par(mfrow=c(1,1))
+        graphics::hist(obs_initial_percent_missing, main = "Histogram of percent missing by rows", xlab ="Percent missing")
 
         # Get user feedback on how they would like to progress.
-        row_input <- menu(c("Set row drop tolerance", "Exit, I don't want to drop any rows!"), title="Please view the histogram of observation percent missing (by row). What would you like to do now? ")
+        row_input <- utils::menu(c("Set row drop tolerance", "Exit, I don't want to drop any rows!"), title="Please view the histogram of observation percent missing (by row). What would you like to do now? ")
 
         # If user would like to set a drop tolerance for rows, take tolerance, remove rows and update dropped_rows
         if (row_input == 1){
@@ -169,8 +179,10 @@ handleMissing <- function(df, no_drop = FALSE, no_impute = FALSE, drop_col_tol =
     not_nums <- names(df[!colnames(df) %in% nums & !colnames(df) %in% dates_times & !colnames(df) %in% factors])
     missing_stats[which(missing_stats$variable %in% not_nums), 'impute method'] <- 'None_Not Numeric'
 
+    stat_column <- names(missing_stats)
+
     for (column in nums){
-      if (as.numeric(missing_stats[which(missing_stats$variable == column), 'after_drop_percent']) > 0){
+      if (as.numeric(missing_stats[which(missing_stats$variable == column), stat_column[length(stat_column)-1]]) > 0){
         df[is.na(df[[column]]), column] <- mean(df[[column]], na.rm = TRUE)
         missing_stats[which(missing_stats$variable == column), 'impute method'] <- 'Mean'
       }

@@ -4,27 +4,46 @@
 \alias{handleMissing}
 \title{handleMissing}
 \usage{
-handleMissing(df, drop_col_tol = NULL, drop_row_tol = NULL, user_level = 1)
+handleMissing(
+  df,
+  no_drop = FALSE,
+  no_impute = FALSE,
+  drop_col_tol = NULL,
+  drop_row_tol = NULL,
+  missing_user_level = 1
+)
 }
 \arguments{
-\item{df}{A dataframe.}
+\item{df}{A dataframe with any combination of variable classes, dates must be properly classified as dates.}
 
-\item{user_level}{An indicator of whether the user will provide input or if the user would like to fully automate the process, 1 indicates user interaction.}
+\item{no_drop}{A boolean indicating whether or not to drop values, TRUE skips all dropping and proceeds to imputation.}
 
-\item{drop_tol}{A percent tolerance to automatically drop columns with percent missing values greater than or equal to this value.}
+\item{no_impute}{A boolean indicating whether or not to impute values. TRUE skips imputation.}
+
+\item{drop_col_tol}{A percent tolerance to automatically drop columns with percent missing values greater than or equal to this value. Report in percent from 0 to 100.}
+
+\item{drop_row_tol}{A percent tolerance to automatically drop rows with percent missing values greater than or equal to this value.If values are provided for both columns and rows, columns will be dropped first.Report in percent from 0 to 100.}
+
+\item{missing_user_level}{An indicator of whether the user will provide input or if the user would like to fully automate the process, 1 indicates user interaction.}
 }
 \value{
-The dataframe with dropped or imputated missing values.
+A list with the following elements:
+\itemize{
+ \item \code{df}:  A dataframe with missing values dropped and/or imputed, according to user input.
+ \item \code{missing_stats}: A dataframe providing details about which columns were dropped and what percent missing values were identified throughout several steps, according to user input. If imputation is selected, this will include the method of imputation performed on each column.
+ \item \code{dropped_cols}: A list of column names that were dropped from the original dataframe.
+ \item \code{dropped_rows}: A list of row indices that were dropped from the original dataframe.
+ }
 }
 \description{
-handleMissing
+'handleMissing' takes a dataframe and filsl or removes missing values. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class. Function defaults to user interaction.
 }
 \examples{
 # Define the dataframe, clear of special characters
-df <- handleSpecial(fires,user_level =0)$df
+df <- handleSpecial(fires, special_user_level =0)$df
 
 # Store function results
-out <- handleMissing(df, drop_col_tol = 80, user_level = 0)
+out <- handleMissing(df, drop_col_tol = 80, missing_user_level = 0)
 str(out$df)
 
 }
