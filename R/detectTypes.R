@@ -123,7 +123,8 @@ detectTypes <- function(df, factor_tol = NULL, user_tol = 30){
   typeStats$new_class <- sapply(cbind(nums, not_nums, dates_times, factors)[column_order], function(column) class(column))
 
   # Define the return list of dataframes for output
-  return_list <- list('df'= cbind(nums, not_nums, dates_times, factors)[column_order], 'date_times' = dates_times, 'numbers' = nums, 'characters' = not_nums, 'factors' = factors, 'type_stats' = typeStats)
+  return_list <- list('df'= cbind(nums, not_nums, dates_times, factors)[column_order], 'date_times' = names(dates_times), 'numbers' = names(nums), 'characters' = names(not_nums), 'factors' = names(factors), 'type_stats' = typeStats)
+  # set to column names
 
   return(return_list)
 }
