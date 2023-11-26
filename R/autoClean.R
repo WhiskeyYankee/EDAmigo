@@ -52,10 +52,10 @@ autoClean <- function(df, vals = "[^0-9A-Za-z.,[:space:]-]", special_user_level 
   missingStats <- clean$missing_stats
   dropped_cols <- clean$dropped_cols
   dropped_rows <- clean$dropped_rows
-  cleanDf <- clean$df
+  clean_df <- clean$df
 
   # Return all
-  return_list <- list('clean_df' = cleanDf, 'special_found_replaced' = special_found_replaced, 'type_stats'= typeStats, 'missing_stats'= missingStats, 'dropped_cols'= dropped_cols, 'dropped_rows'= dropped_rows)
+  return_list <- list('clean_df' = clean_df, 'special_found_replaced' = special_found_replaced, 'type_stats'= typeStats, 'missing_stats'= missingStats, 'dropped_cols'= dropped_cols, 'dropped_rows'= dropped_rows)
 
   return(return_list)
 

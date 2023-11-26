@@ -8,6 +8,8 @@
 #' @param drop_col_tol A percent tolerance to automatically drop columns with percent missing values greater than or equal to this value. Report in percent from 0 to 100.
 #' @param drop_row_tol A percent tolerance to automatically drop rows with percent missing values greater than or equal to this value.If values are provided for both columns and rows, columns will be dropped first.Report in percent from 0 to 100.
 #' @param missing_user_level An indicator of whether the user will provide input or if the user would like to fully automate the process, 1 indicates user interaction.
+#' @param impute_method A string indicating the method of imputation. If no_impute is set to TRUE, this is ignored.
+#' @param impute_factors A boolean indicating whether or not to impute factor columns. If set to TRUE, the value occurring most frequently is applied to missing values.
 #'
 #' @return
 #' A list with the following elements:
@@ -28,11 +30,18 @@
 #' out <- handleMissing(df, drop_col_tol = 80, missing_user_level = 0)
 #' str(out$df)
 #'
-handleMissing <- function(df, no_drop = FALSE, no_impute = FALSE, drop_col_tol = NULL, drop_row_tol = NULL, missing_user_level = 1){
+handleMissing <- function(df, no_drop = FALSE, no_impute = FALSE, drop_col_tol = NULL, drop_row_tol = NULL, missing_user_level = 1, impute_method = 'median', impute_factors = FALSE){
 
   # Check to make sure user has supplied enough parameters to execute the function. Must specifiy at least one drop tolerance, or utilize user interaction.
   if(is.null(drop_col_tol) & is.null(drop_row_tol) & missing_user_level == 0) stop("Please supply at least one tolerance, or set missing_user_level to 1.")
+  if(no_drop & no_impute) stop("You have indicated that you do not want to drop or impute. No actions to perform with these selections. Please set no_drop or no_impute to FALSE.")
 
+  means <- c('Mean', 'mean', 'mean()', 'Mean()','Average', 'average', 'avg', 'AVG', 'Avg')
+  medians <- c('Median', "median", 'median()', 'Median()' ,'Med', 'med', 'middle','Middle')
+  randos <- c('Random', 'random', 'rand', 'Rand', 'random sample', 'Random sample', 'Random Sample')
+  zeros <- c('Zero' ,'zero', '0')
+
+  if(!impute_method %in% means & !impute_method %in% medians & !impute_method %in% randos & !impute_method %in% zeros) stop("The specified imputation method is not a supported method. Please reference the handleMissing() documentation to see supported functions.")
   # Calculate the percentage of missing values in each column of the dataframe and save information to missing_stats
   # Perform separate calculation on date/time columns
   initial_percent_missing <- sapply(df, function(column) {
@@ -172,7 +181,15 @@ handleMissing <- function(df, no_drop = FALSE, no_impute = FALSE, drop_col_tol =
     missing_stats[which(missing_stats$variable %in% dates_times), 'impute method'] <- 'None_Date Type'
 
     factors <- names(df[sapply(df, function(column) inherits(column, 'factor'))])
-    missing_stats[which(missing_stats$variable %in% factors), 'impute method'] <- 'None_Factor'
+    # If the user wants to impute factors, replace all missing values with the most frequently occuring factor
+    if (impute_factors){
+      for (column in factors){
+        df[(is.na(df[[column]]) | df[[column]]== ''), column] <- names(which.max(table(stats::na.omit(df[[column]]))))
+      }
+      missing_stats[which(missing_stats$variable %in% factors), 'impute method'] <- 'Most Frequent Factor'
+    }else{
+      missing_stats[which(missing_stats$variable %in% factors), 'impute method'] <- 'None_Factor'
+    }
 
     nums <- names(dplyr::select_if(df, is.numeric))
 
@@ -183,9 +200,35 @@ handleMissing <- function(df, no_drop = FALSE, no_impute = FALSE, drop_col_tol =
 
     for (column in nums){
       if (as.numeric(missing_stats[which(missing_stats$variable == column), stat_column[length(stat_column)-1]]) > 0){
-        df[is.na(df[[column]]), column] <- mean(df[[column]], na.rm = TRUE)
-        missing_stats[which(missing_stats$variable == column), 'impute method'] <- 'Mean'
+        if (missing_user_level == 1){
+          method_invalid <- TRUE
+          while (method_invalid){
+            impute_method <- readline(prompt = sprintf("%s has %.2f%% missing. What impute method would you like to use? Do not use quotation marks. ", noquote(column), as.numeric(missing_stats[which(missing_stats$variable == column), stat_column[length(stat_column) - 1]])))
+            if(impute_method != 'Exit' & impute_method !='exit' & !impute_method %in% means & !impute_method %in% medians & !impute_method %in% randos & !impute_method %in% zeros){
+              cat(noquote(c(impute_method, ' is not a valid imputation method. Please try again, or type "Exit" to skip imputation.')))
+            }
+            else(method_invalid = FALSE)
+          }
+        }
+        if (impute_method %in% means){
+          df[is.na(df[[column]]), column] <- mean(df[[column]], na.rm = TRUE)
+          missing_stats[which(missing_stats$variable == column), 'impute method'] <- 'Mean'
+        }
+        if (impute_method %in% medians){
+          df[is.na(df[[column]]), column] <- median(df[[column]], na.rm = TRUE)
+          missing_stats[which(missing_stats$variable == column), 'impute method'] <- 'Median'
+        }
+        if (impute_method %in% randos){
+          df[is.na(df[[column]]), column] <- sample(stats::na.omit(df[[column]]), length(df[is.na(df[[column]]), column]))
+          missing_stats[which(missing_stats$variable == column), 'impute method'] <- 'Random Replacement'
+        }
+        if (impute_method %in% zeros){
+          df[is.na(df[[column]]), column] <- 0
+          missing_stats[which(missing_stats$variable == column), 'impute method'] <- 'Zero'
+        }
+
       }
+
       else{ missing_stats[which(missing_stats$variable == column), 'impute method'] <- 'No Missing Values'}
 
     }

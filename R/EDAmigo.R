@@ -14,12 +14,27 @@
 #' @param missing_user_level An indicator of whether the user will provide input or if the user would like to fully automate the process, 1 indicates user interaction.
 #'
 #' @return
+#' A list with the following elements:
+#' \itemize{
+#'  \item \code{clean_df}:  A dataframe with missing values dropped and/or imputed, according to user input.
+#'  }
 #' @export
 #'
 #' @examples
+#' cleaned <- EDAmigo(fires, factor_tol = 10)
 EDAmigo <- function(df, vals = "[^0-9A-Za-z.,[:space:]-]", special_user_level = 0, factor_tol = NULL, type_user_tol = 20, no_drop = FALSE,  no_impute = FALSE, drop_col_tol = 50, drop_row_tol = NULL, missing_user_level = 0){
 
-  list(cleanDf, special_found_replaced, typeStats,  missingStats, dropped_cols, dropped_rows) <-  autoClean(df, vals = vals, special_user_level = special_user_level , factor_tol = factor_tol, type_user_tol = type_user_tol, no_drop = no_drop,  no_impute = no_impute, drop_col_tol = drop_col_tol, drop_row_tol = drop_row_tol, missing_user_level = missing_user_level)
+  # Clean the dataframe before processing. Store autoCelan output.
+  clean <-  autoClean(df, vals = vals, special_user_level = special_user_level , factor_tol = factor_tol, type_user_tol = type_user_tol, no_drop = no_drop,  no_impute = no_impute, drop_col_tol = drop_col_tol, drop_row_tol = drop_row_tol, missing_user_level = missing_user_level)
+  clean_df <- clean$clean_df
+  special_found_replaced <- clean$special_found_replaced
+  type_stats <- clean$type_stats
+  missing_stats <- clean$missing_stats
+  dropped_cols <- clean$dropped_cols
+  dropped_rows <- clean$dropped_rows
 
+
+
+  return(clean_df)
 
 }
