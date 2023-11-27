@@ -11,7 +11,10 @@
 #' @param no_impute A boolean indicating whether or not to impute values. TRUE skips imputation.
 #' @param drop_col_tol A percent tolerance to automatically drop columns with percent missing values greater than or equal to this value. Report in percent from 0 to 100.
 #' @param drop_row_tol A percent tolerance to automatically drop rows with percent missing values greater than or equal to this value.If values are provided for both columns and rows, columns will be dropped first.Report in percent from 0 to 100.
-#' @param missing_user_level An indicator of whether the user will provide input or if the user would like to fully automate the process, 1 indicates user interaction.
+#' @param drop_user_level An indicator of whether the user will provide input or if the user would like to fully automate the drop process, 1 indicates user interaction.
+#' @param impute_user_level An indicator of whether the user will provide input or if the user would like to fully automate the imputation process, 1 indicates user interaction.
+#' @param impute_method A string indicating the method of imputation. If no_impute is set to TRUE, this is ignored.
+#' @param impute_factors A boolean indicating whether or not to impute factor columns. If set to TRUE, the value occurring most frequently is applied to missing values.
 #'
 #' @return
 #' @export
