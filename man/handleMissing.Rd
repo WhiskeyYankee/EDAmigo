@@ -10,7 +10,10 @@ handleMissing(
   no_impute = FALSE,
   drop_col_tol = NULL,
   drop_row_tol = NULL,
-  missing_user_level = 1
+  drop_user_level = 1,
+  impute_user_level = 1,
+  impute_method = "median",
+  impute_factors = FALSE
 )
 }
 \arguments{
@@ -24,7 +27,13 @@ handleMissing(
 
 \item{drop_row_tol}{A percent tolerance to automatically drop rows with percent missing values greater than or equal to this value.If values are provided for both columns and rows, columns will be dropped first.Report in percent from 0 to 100.}
 
-\item{missing_user_level}{An indicator of whether the user will provide input or if the user would like to fully automate the process, 1 indicates user interaction.}
+\item{drop_user_level}{An indicator of whether the user will provide input or if the user would like to fully automate the drop process, 1 indicates user interaction.}
+
+\item{impute_user_level}{An indicator of whether the user will provide input or if the user would like to fully automate the imputation process, 1 indicates user interaction.}
+
+\item{impute_method}{A string indicating the method of imputation. If no_impute is set to TRUE, this is ignored.}
+
+\item{impute_factors}{A boolean indicating whether or not to impute factor columns. If set to TRUE, the value occurring most frequently is applied to missing values.}
 }
 \value{
 A list with the following elements:
@@ -43,7 +52,7 @@ A list with the following elements:
 df <- handleSpecial(fires, special_user_level =0)$df
 
 # Store function results
-out <- handleMissing(df, drop_col_tol = 80, missing_user_level = 0)
+out <- handleMissing(df, drop_col_tol = 80,  drop_user_level = 0, impute_user_level = 0)
 str(out$df)
 
 }

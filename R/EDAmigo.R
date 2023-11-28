@@ -17,12 +17,17 @@
 #' @param impute_factors A boolean indicating whether or not to impute factor columns. If set to TRUE, the value occurring most frequently is applied to missing values.
 #'
 #' @return
+#' #' A list with the following elements:
+#' \itemize{
+#'  \item \code{df}:  A dataframe with missing values dropped and/or imputed, according to user input.
+#' }
 #' @export
 #'
 #' @examples
-EDAmigo <- function(df, vals = "[^0-9A-Za-z.,[:space:]-]", special_user_level = 0, factor_tol = NULL, type_user_tol = 20, no_drop = FALSE,  no_impute = FALSE, drop_col_tol = 50, drop_row_tol = NULL, missing_user_level = 0){
+#' result <- EDAmigo(f)
+EDAmigo <- function(df, vals = "[^0-9A-Za-z.,[:space:]-]", special_user_level = 0, factor_tol = NULL, type_user_tol = 20, no_drop = FALSE,  no_impute = FALSE, drop_col_tol = 50, drop_row_tol = NULL, drop_user_level = 0, impute_user_level = 0 ){
 
-  list(cleanDf, special_found_replaced, typeStats,  missingStats, dropped_cols, dropped_rows) <-  autoClean(df, vals = vals, special_user_level = special_user_level , factor_tol = factor_tol, type_user_tol = type_user_tol, no_drop = no_drop,  no_impute = no_impute, drop_col_tol = drop_col_tol, drop_row_tol = drop_row_tol, missing_user_level = missing_user_level)
+  list(cleanDf, special_found_replaced, typeStats,  missingStats, dropped_cols, dropped_rows) <-  autoClean(df, vals = vals, special_user_level = special_user_level , factor_tol = factor_tol, type_user_tol = type_user_tol, no_drop = no_drop,  no_impute = no_impute, drop_col_tol = drop_col_tol, drop_row_tol = drop_row_tol, drop_user_level = drop_user_level, impute_user_level =  impute_user_level)
 
 
 }

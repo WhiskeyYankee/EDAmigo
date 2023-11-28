@@ -1,9 +1,12 @@
 #' tryNumeric
 #'
+#' Attempt to coerce string columns to numeric.
+#'
 #' @param df A dataframe with no dates/times.
 #'
 #' @return numeric strings coerced to numbers.
 #' @noRd
+#'
 #'
 #'
 .tryNumeric <- function(df){

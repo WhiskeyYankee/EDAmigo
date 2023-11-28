@@ -41,9 +41,9 @@ All of our date columns are type 'Date.' However, there are several special char
   # special_user_level set to 0 indicating automatic special character removal with no user interaction
   # a factor tolerance of 1% to automatically coerce values with 1% or less unique values to factors
   # a user tolerance of 20%, this will prompt the user for direction when a column has <= 30% unique values
-  # missing_user_level of 1, indicating that the user prefers to interact with the handleMissing() function
+  # drop_user_level of 1, indicating that the user prefers to interact with the handleMissing() function
 
-result <- autoClean(df, special_user_level = 0, factor_tol = 10, type_user_tol = 10, missing_user_level = 0)
+result <- autoClean(df, special_user_level = 0, factor_tol = 10, type_user_tol = 10, drop_user_level = 0, impute_user_level = 0, impute_factors = TRUE)
 ```
 Now, let's examine the output of autoClean(). The function returned a list of 6 elements.
 
@@ -73,7 +73,7 @@ This output is a record of what the detectTypes() function changed. The first co
 result$type_stats
 ```
 
-## handleMissing output
+## handleMissing() output
 Lastly, the handleMissing output includes information about which columns are dropped, and at what point in the process. 'missing_stats' includes the percent of missing values for each column throughout each step in the process. It is important to note that this output may change, depending upon the options the user inputs and/or selects during interactive sections of the function.
 
 The final list of dropped columns and dropped rows are also provided, so the user knows which rows and columns are no longer contained in the final dataframe.

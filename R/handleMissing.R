@@ -28,7 +28,7 @@
 #' df <- handleSpecial(fires, special_user_level =0)$df
 #'
 #' # Store function results
-#' out <- handleMissing(df, drop_col_tol = 80,  = 0)
+#' out <- handleMissing(df, drop_col_tol = 80,  drop_user_level = 0, impute_user_level = 0)
 #' str(out$df)
 #'
 handleMissing <- function(df, no_drop = FALSE, no_impute = FALSE, drop_col_tol = NULL, drop_row_tol = NULL, drop_user_level = 1, impute_user_level = 1, impute_method = 'median', impute_factors = FALSE){
@@ -178,6 +178,8 @@ handleMissing <- function(df, no_drop = FALSE, no_impute = FALSE, drop_col_tol =
     # Save column order to reorder output prior to return
     column_order <- colnames(df)
 
+    # Retrieve names of missing_stats, this will vary depending upon user input.
+    stat_column <- names(missing_stats)
     # Separate out data types and add impute method to missing stats for each type
     # Dates and times
     dates_times <- names(df[sapply(df, function(column) inherits(column, 'Date')) | sapply(df, function(column) inherits(column, 'POSIXct')) | sapply(df, function(column) inherits(column, 'POSIXlt'))])
@@ -188,9 +190,15 @@ handleMissing <- function(df, no_drop = FALSE, no_impute = FALSE, drop_col_tol =
     # If the user wants to impute factors, replace all missing values with the most frequently occurring factor
     if (impute_factors){
       for (column in factors){
-        df[(is.na(df[[column]]) | df[[column]]== ''), column] <- names(which.max(table(stats::na.omit(df[[column]]))))
+        if (as.numeric(missing_stats[which(missing_stats$variable == column), stat_column[length(stat_column)-1]]) > 0){
+          # Fill missing values with most frequent factor and update missing_stats
+          df[(is.na(df[[column]]) | df[[column]]== ''), column] <- names(which.max(table(stats::na.omit(df[[column]][df[[column]] != '']))))
+          missing_stats[which(missing_stats$variable %in% factors), 'impute method'] <- 'Most Frequent Factor'
+        } else{
+          missing_stats[which(missing_stats$variable == column), 'impute method'] <- 'No Missing Values'
+        }
       }
-      missing_stats[which(missing_stats$variable %in% factors), 'impute method'] <- 'Most Frequent Factor'
+
     }else{
       missing_stats[which(missing_stats$variable %in% factors), 'impute method'] <- 'None_Factor'
     }
@@ -202,8 +210,7 @@ handleMissing <- function(df, no_drop = FALSE, no_impute = FALSE, drop_col_tol =
     not_nums <- names(df[!colnames(df) %in% nums & !colnames(df) %in% dates_times & !colnames(df) %in% factors])
     missing_stats[which(missing_stats$variable %in% not_nums), 'impute method'] <- 'None_Not Numeric'
 
-    # Retrieve names of missing_stats, this will vary depending upon user input.
-    stat_column <- names(missing_stats)
+
 
     # Iterate through columns in numeric and impute according to user input. Update Missing_stats with method used.
     for (column in nums){
