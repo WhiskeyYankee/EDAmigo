@@ -33,7 +33,7 @@
 #' @export
 #'
 #' @examples
-#' cleaned <- autoClean(fires, factor_tol = 10)
+#' cleaned <- autoClean(fires, factor_tol = 10, drop_user_level = 0, impute_user_level = 0)
 autoClean <- function(df, vals = "[^0-9A-Za-z.,[:space:]-]", special_user_level = 0, factor_tol = NULL, type_user_tol = 20, no_drop = FALSE,  no_impute = FALSE, drop_col_tol = 50, drop_row_tol = NULL,  drop_user_level = 1, impute_user_level = 1,  impute_method = 'median', impute_factors = FALSE){
 
   # Handle special characters. Save output as individual variables to pass out.
@@ -51,7 +51,7 @@ autoClean <- function(df, vals = "[^0-9A-Za-z.,[:space:]-]", special_user_level 
   typeStats <- set_types$type_stats
 
   # Handle missing values, drop or impute.
-  clean <- handleMissing(df = typed_df, no_drop = no_drop, no_impute = no_impute, drop_col_tol = drop_col_tol, drop_row_tol = drop_row_tol, missing_user_level = missing_user_level)
+  clean <- handleMissing(df = typed_df, no_drop = no_drop, no_impute = no_impute, drop_col_tol = drop_col_tol, drop_row_tol = drop_row_tol, drop_user_level = drop_user_level, impute_user_level = impute_user_level, impute_factors = impute_factors)
   missingStats <- clean$missing_stats
   dropped_cols <- clean$dropped_cols
   dropped_rows <- clean$dropped_rows
