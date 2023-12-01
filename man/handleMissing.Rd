@@ -4,20 +4,14 @@
 \alias{handleMissing}
 \title{handleMissing}
 \usage{
-handleMissing(
-  df,
-  drop_tol = NULL,
-  user_level = 1,
-  drop_row = TRUE,
-  drop_col = FALSE
-)
+handleMissing(df, drop_col_tol = NULL, drop_row_tol = NULL, user_level = 1)
 }
 \arguments{
 \item{df}{A dataframe.}
 
-\item{drop_tol}{A percent tolerance to automatically drop columns with percent missing values greater than or equal to this value.}
-
 \item{user_level}{An indicator of whether the user will provide input or if the user would like to fully automate the process, 1 indicates user interaction.}
+
+\item{drop_tol}{A percent tolerance to automatically drop columns with percent missing values greater than or equal to this value.}
 }
 \value{
 The dataframe with dropped or imputated missing values.
@@ -30,7 +24,7 @@ handleMissing
 df <- handleSpecial(fires,user_level =0)$df
 
 # Store function results
-out <- handleMissing(df, drop_tol = 80, user_level = 0)
+out <- handleMissing(df, drop_col_tol = 80, user_level = 0)
 str(out$df)
 
 }

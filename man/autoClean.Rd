@@ -9,7 +9,8 @@ autoClean(
   factor_tol = NULL,
   user_tol = 30,
   vals = "[^0-9A-Za-z.,[:space:]-]",
-  drop_tol = NULL,
+  drop_col_tol = 50,
+  drop_row_tol = NULL,
   user_level = 0
 )
 }
@@ -22,9 +23,9 @@ autoClean(
 
 \item{vals}{A gsub formatted list of characters to keep or remove.}
 
-\item{drop_tol}{A percent tolerance to automatically drop columns with percent missing values greater than or equal to this value.}
-
 \item{user_level}{An indicator of whether the user will provide input or if the user would like to fully automate the process, 1 indicates user interaction.}
+
+\item{drop_tol}{A percent tolerance to automatically drop columns with percent missing values greater than or equal to this value.}
 }
 \value{
 A dataframe with special characters removed and column types set to the appropriate class.
