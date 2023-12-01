@@ -10,7 +10,6 @@
 #' @param lambda Numeric value(s) indicating what power to use in the Box-Cox transformation
 #' @param cols A vector indicating the column numbers or the names of the columns one wishes to evaluate. If NULL then all numeric columns will be evalutated.
 #' @param alpha A numeric value used to determine the shift parameter when 0s and or negative values are detected in the data.
-#' @param suggest If TRUE, boxCox will select the simplest lambda within the confidence interval, if FALSE, the lambda associated with the maximum likelihood will be used.
 #'
 #'
 #' @return The boxCox function returns a list of objects. The boxCox_Results data frame has the estimates for each column evaluted by the function. The lambda_1 vector contains all of the lambdas evaluated by the function.
@@ -26,9 +25,10 @@
 #' boxCox(test_data)$boxCox_Results
 #' plot(density(test_data$X_1), main = "Before")
 #' plot(density(boxCox(test_data)$transformations$X_1), main = "After")
-boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, suggest = FALSE){
+boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001){
   # Get Helper Function
   # source("R/rowMin.R")
+  st <<- Sys.time()
 
   # Get the Names if they exist
   # Determine which columns are numeric
@@ -100,7 +100,7 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, suggest = FALSE
   # Set up lambda matrix and Matrix to hold results
   lambda_mat = matrix(1, nrow = n) %*% lambda
   logLik_mat = matrix(0, nrow = length(lambda), ncol = p)
-  results = matrix(0 , nrow = p, ncol = 5)
+  results = matrix(0 , nrow = p, ncol = 10)
   transformations = matrix(NA, nrow = n, ncol = p)
 
 # Loop through each predictor
@@ -124,7 +124,8 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, suggest = FALSE
     X_var = colSums( (X_trans - X_mu)^2, na.rm = T)/n
 
     # Calculate the log-likelihood
-    logLike = (-n/2)*(log( 2 * pi* X_var) +1) +n*(lambda - 1) * log(geom_mean[i])
+    logLike = (-n/2)*(log( 2 * pi* X_var) +1) +n*(lambda - 1) * log(geom_mean[i]) # Should be able to remove variance from this
+
 
     # Determine CI and log-likelihood prediction
     mx = which.max(logLike)
@@ -137,36 +138,46 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, suggest = FALSE
     ci_ul = suppressWarnings( min( which(logLike[mx:length(lambda) ] <= (logLike_mx - .5*qchisq(0.95,1)))))
     lambda_ul = lambda[ci_ul + mx -1]
 
-    # Suggest a standard transformation in indicated
-    if(suggest == TRUE){
-    ## If boxCox didn't converge in range, don't suggest a transformation, otherwise select the simplest transformation in the CI range
-      if(is.na(lambda_ll) | is.na(lambda_ul)){
-        lambda_suggest = NA
-      } else if(lambda_ll <= round(lambda_mx) & round(lambda_mx) <= lambda_ul) {
-        lambda_suggest = round(lambda_mx)
-      } else if(lambda_ll <= round(lambda_mx*2)/2 & round(lambda_mx*2)/2 <= lambda_ul) {
-        lambda_suggest = round(lambda_mx*2)/2
-      } else if(lambda_ll <= round(lambda_mx*3)/3 & round(lambda_mx*3)/3 <= lambda_ul) {
-        lambda_suggest = round(lambda_mx*3)/3
-        } else if(lambda_ll <= round(lambda_mx*4)/4 & round(lambda_mx*4)/4 <= lambda_ul) {
-        lambda_suggest = round(lambda_mx*4)/4
-      } else {lambda_suggest = lambda_mx }
-    } else {lambda_suggest = lambda_mx }
+    # Test the normality of the transformed data
+    anderson_darling_old = tryCatch( nortest::ad.test(X[ , i]) , error = function(e){NA} )
+    anderson_darling_new = tryCatch( nortest::ad.test(X_trans[ , mx]) , error = function(e){NA} )
 
-    ## Store the transformed transformations associated with lambda_suggest
-    if(lambda_suggest %in% lambda){
-      transformations[, i ] =  X_trans[,which(lambda == lambda_suggest)]
-    } else if(!is.na(lambda_suggest)) {
-      if(lambda_suggest == 0){ transformations[, i ] = log(X_shift[,i, drop = FALSE])} else{
-      transformations[, i ] =  (X_shift[, i, drop = FALSE]^lambda_suggest - 1)/lambda_suggest}
-    }
+    # Get a rough count of oulier improvement
+    old_25 = as.numeric( tryCatch( stats::quantile(X[ , i] , 0.25, na.rm = T), error = function(e){NA} ) )
+    old_75 = as.numeric( tryCatch( stats::quantile(X[ , i] , 0.75, na.rm = T), error = function(e){NA} ) )
+    old_lwr = old_25 - 1.5 * (old_75 - old_25)
+    old_upr = old_75 + 1.5 * (old_75 - old_25)
+    old_outliers = sum( X[ , i] > old_upr | X[ , i] < old_lwr , na.rm = T )
+
+    new_25 = as.numeric( tryCatch( stats::quantile(X_trans[ , mx] , 0.25, na.rm = T), error = function(e){NA} ))
+    new_75 = as.numeric( tryCatch( stats::quantile(X_trans[ , mx] , 0.75, na.rm = T), error = function(e){NA} ))
+    new_lwr = new_25 - 1.5 * (new_75 - new_25)
+    new_upr = new_75 + 1.5 * (new_75 - new_25)
+    new_outliers = sum( X_trans[ , mx] > new_upr | X_trans[ , mx] < old_lwr , na.rm = T )
+
+    # Store Transformations
+    transformations[, i ] =  X_trans[ ,mx , drop = FALSE ]
 
     # Store the resulting parameters from the BoxCox transformation
     results[ i , 1] = lambda_2[i]
     results[ i , 2] = lambda_ll
     results[ i , 3] = lambda_mx
     results[ i , 4] = lambda_ul
-    results[ i , 5] = lambda_suggest
+    if(any(is.na(anderson_darling_old))){
+      results[ i , 5] = NA
+      results[ i , 6] = NA
+      results[ i , 7] = NA
+      results[ i , 8] = NA
+      results[ i , 9] = NA
+      results[ i , 10] = NA
+      warning(paste("Unable to reslove column: ",col_names[ cols[ i ]]))
+    }else{
+      results[ i , 5] = as.numeric( anderson_darling_old$statistic )
+      results[ i , 6] = as.numeric( anderson_darling_new$statistic )
+      results[ i , 7] = as.numeric( anderson_darling_old$p.value )
+      results[ i , 8] = as.numeric( anderson_darling_new$p.value )
+      results[ i , 9] = old_outliers
+      results[ i , 10] = new_outliers}
 
     # Store the log likelihood calculations
     logLik_mat[ , i ] = logLike
@@ -195,23 +206,55 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, suggest = FALSE
   boxCox_Results = data.frame(
      col_num = cols
     ,col_name = col_names[cols]
-    ,lambda_2_selected = results[ , 1]
-    #,lambda_1 = results[ , 3]
-    ,lambda_1_ll = results[ , 2]
-    ,lambda_1_ul = results[ , 4]
-    ,lambda_1_selected = results[ , 5]
+    ,lambda_2 = results[ , 1]
+    ,lambda_1 = results[ , 3]
+    ,lambda_1_lwr = results[ , 2]
+    ,lambda_1_upr = results[ , 4]
+    ,raw_anderson_darling_stat = results[  , 5]
+    ,trans_anderson_darling_stat = results[  , 6]
+    ,raw_anderson_darling_p_val = results[  , 7]
+    ,trans_anderson_darling_p_val = results[  , 8]
+    ,raw_beyond_iqr = results[  , 9]
+    ,trans_beyond_iqr = results[  , 10]
   )
 
 # If any variables did not converge, warn the user
-if(any(is.na(boxCox_Results$lambda_1_ll)) | any(is.na(boxCox_Results$lambda_1_ll))){
+if(any(is.na(boxCox_Results$lambda_1_lwr)) | any(is.na(boxCox_Results$lambda_1_upr))){
   warning("One or more of the variables did not converge in the spcified lambda_1 range")
 }
 
+transformations = as.data.frame(transformations)
+names(transformations) = boxCox_Results$col_name
+
+
+# Filter Results to transformations that show improvements
+improve = (boxCox_Results$trans_anderson_darling_stat <= boxCox_Results$raw_anderson_darling_stat &
+          boxCox_Results$raw_beyond_iqr >= boxCox_Results$trans_beyond_iqr) &
+          !(is.na(boxCox_Results$lambda_1_lwr |
+          is.na(boxCox_Results$lambda_1_upr)))
+
+improve[ is.na(improve) ] = FALSE
+
+
+# Select only results that improve the results
+boxCox_Results = boxCox_Results[ improve ,  ]
+
 # Select only transformations having a lambda_1 that converged and store the results in a data frame
-transformations = as.data.frame(transformations[ , !(is.na(boxCox_Results$lambda_1_selected)) ])
-names(transformations) = boxCox_Results$col_name[ !(is.na(boxCox_Results$lambda_1_selected))  ]
+transformations = transformations[ , improve ]
 
+# Determine Display order
+importance_order = order(  boxCox_Results$trans_anderson_darling_p_val
+                         , boxCox_Results$raw_anderson_darling_stat - boxCox_Results$trans_anderson_darling_stat
+                         , boxCox_Results$raw_beyond_iqr - boxCox_Results$trans_beyond_iqr, decreasing = T)
 
+# Reorder results
+boxCox_Results = boxCox_Results[ importance_order ,  ]
+
+# Reorder results
+transformations = transformations[ , importance_order ]
+
+ed <<- Sys.time()
 return(list(boxCox_Results = boxCox_Results, lambda_1 = lambda,  logLik_mat = logLik_mat, transformations = transformations))
+
 
 }
