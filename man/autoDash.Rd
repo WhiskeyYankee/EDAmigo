@@ -15,7 +15,3 @@ Outputs an interactive HTML dashbaoard.
 \description{
 Automatically create an interactive dashboard
 }
-\examples{
-autoDash(finance)
-
-}

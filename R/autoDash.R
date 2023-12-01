@@ -7,8 +7,7 @@
 #' @return Outputs an interactive HTML dashbaoard.
 #' @export
 #'
-#' @examples
-#' autoDash(finance)
+
 #'
 autoDash <- function(df){
 
