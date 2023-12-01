@@ -4,14 +4,12 @@
 \alias{detectTypes}
 \title{detectTypes}
 \usage{
-detectTypes(df, dateForm = "\%m/\%d/\%Y", cat_tol = NULL, user_tol = 80)
+detectTypes(df, factor_tol = NULL, user_tol = 80)
 }
 \arguments{
-\item{df}{A dataframe with any combination of variable classes.}
+\item{df}{A dataframe with any combination of variable classes, dates must be properly classified as dates.}
 
-\item{dateForm}{A string, or vector of strings, indicating the format of any dates contained in the dataframe.}
-
-\item{cat_tol}{A numeric value indicating the tolerance of unique integer values to automatically coerce a column to a categorical variable. Report in percent from 0 to 100.}
+\item{factor_tol}{A numeric value indicating the tolerance to automatically coerce a column to a factor. Report in percent from 0 to 100.}
 
 \item{user_tol}{A numeric value indicating the tolerance to receive user input prompts to assist in selecting which integer columns should be coerced to categorical, date, or retain as an integer. Report in percent from 0 to 100.}
 }
@@ -29,7 +27,7 @@ df <- fires
 str(df)
 
 # Clean the dataframe using a tolerance of 50\%
-clean <- detectTypes(df, cat_tol = 50)
+clean <- detectTypes(df, factor_tol = 50)
 str(clean)
 
 }
