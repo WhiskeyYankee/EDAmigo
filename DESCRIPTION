@@ -19,5 +19,6 @@ Imports: dplyr,
   utils
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    descTools
 VignetteBuilder: knitr
