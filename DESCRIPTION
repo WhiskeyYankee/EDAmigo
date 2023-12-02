@@ -21,6 +21,7 @@ Imports: dplyr,
   stats
 Suggests: 
     rmarkdown,
+    knitr,
     descTools
 VignetteBuilder: knitr
 

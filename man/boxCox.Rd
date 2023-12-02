@@ -4,7 +4,7 @@
 \alias{boxCox}
 \title{Simultaneous Boxcox power transformations}
 \usage{
-boxCox(X, lambda = NULL, cols = NULL, alpha = 0.001)
+boxCox(X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE)
 }
 \arguments{
 \item{X}{A numeric matrix or a dataframe containing numeric columns}
@@ -14,9 +14,11 @@ boxCox(X, lambda = NULL, cols = NULL, alpha = 0.001)
 \item{cols}{A vector indicating the column numbers or the names of the columns one wishes to evaluate. If NULL then all numeric columns will be evalutated.}
 
 \item{alpha}{A numeric value used to determine the shift parameter when 0s and or negative values are detected in the data.}
+
+\item{FILTER}{A bolean value the at}
 }
 \value{
-The boxCox function returns a list of objects. The boxCox_Results data frame has the estimates for each column evaluted by the function. The lambda_1 vector contains all of the lambdas evaluated by the function.
+The boxCox function returns a list of objects. The boxCox_Results data frame has the estimates for each column evaluated by the function. The lambda_1 vector contains all of the lambdas evaluated by the function.
 }
 \description{
 \strong{boxCox} is a function that aims to ease the EDA process by computing the boxcox transformations for all of the specified columns in a matrix or dataframe at the same time.
@@ -35,5 +37,5 @@ data.frame(
 
 boxCox(test_data)$boxCox_Results
 plot(density(test_data$X_1), main = "Before")
-plot(density(boxCox(test_data)$transformations$X_1), main = "After")
+plot(density(boxCox(test_data)$transformations$X_2), main = "After")
 }
