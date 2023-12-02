@@ -3,9 +3,12 @@
 \name{boxCox}
 \alias{boxCox}
 \title{Simultaneous Boxcox power transformations}
-\usage{boxCox(X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE)}
+\usage{
+boxCox(X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE)
+}
 \arguments{
 \item{X}{A numeric matrix or a dataframe containing numeric columns}
+
 \item{lambda}{Numeric value(s) indicating what power(s) to use in the Box-Cox transformation. If not provided, boxCox will use -3 , -2.99, ... , 2.99, 3}
 
 \item{cols}{A vector indicating the column numbers or the names of the columns one wishes to evaluate. If NULL then all numeric columns will be evalutated.}
