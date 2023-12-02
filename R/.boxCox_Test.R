@@ -34,6 +34,7 @@ finance_results = boxCox(finance)
 
 finance_results_2 = boxCox(finance, cols = c("total_pymnt_inv", "total_pymnt"))
 finance_results_3 = boxCox(finance, cols = c(37,36))
+
 ### Test 4
 library(tidyverse)
 library(tidymodels)
