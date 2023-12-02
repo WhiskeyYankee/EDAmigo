@@ -89,7 +89,7 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
   p = ncol(X)
 
   # Get minimum value of each predictor
-  factor_min = EDAmigo::rowMin(t(X))$min_value
+  factor_min = rowMin(t(X))$min_value
 
   # Determine Lambda 2
   ## Initialize Lambda 2 to all 0s
@@ -111,7 +111,7 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
   # Set up lambda matrix and Matrix to hold results
   lambda_mat = matrix(1, nrow = n) %*% lambda
   logLik_mat = matrix(0, nrow = length(lambda), ncol = p)
-  results = matrix(0 , nrow = p, ncol = 10)
+  results = matrix(NA , nrow = p, ncol = 10)
   transformations = matrix(NA, nrow = n, ncol = p)
 
 # Loop through each predictor
@@ -144,6 +144,9 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
 
     # Determine CI and log-likelihood prediction
     mx = which.max(logLike)
+
+    # If a solution is found proceed
+  if(length(mx) > 0){
     logLike_mx = logLike[mx]
     lambda_mx = lambda[mx]
 
@@ -202,7 +205,7 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
       warning(paste("Unable to reslove column: ",col_names[ cols[ i ]]))
     }else{
       results[ i , 10] = new_outliers}
-
+  }
     # Store the log likelihood calculations
     logLik_mat[ , i ] = logLike
 
@@ -245,7 +248,7 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
 
 # If any variables did not converge, warn the user
 if(any(is.na(boxCox_Results$lambda_1_lwr)) | any(is.na(boxCox_Results$lambda_1_upr))){
-  warning("One or more of the variables did not converge in the spcified lambda_1 range")
+  warning("One or more of the variables did not converge in the specified lambda_1 range")
 }
 
 transformations = as.data.frame(transformations)
