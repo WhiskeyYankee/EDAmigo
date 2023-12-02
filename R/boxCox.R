@@ -180,7 +180,6 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
     results[ i , 4] = lambda_ul
     if(any(is.na(anderson_darling_old))){
       results[ i , 5] = NA
-
       results[ i , 7] = NA
       warning(paste("Unable to reslove column: ",col_names[ cols[ i ]]))
     }else{
@@ -291,6 +290,5 @@ if(FILTER == TRUE){
 }
 
 return(list(boxCox_Results = boxCox_Results, lambda_1 = lambda,  log_Like = log_Like, transformations = transformations))
-
 
 }
