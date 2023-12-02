@@ -7,7 +7,7 @@ source("R/boxCox.R")
 # Create toy data set
 test_data =
   data.frame(
-     X_1 = rchisq(1000, df = 10)
+     X_1 = rchisq(1000, df = 1)
     ,X_2 = rchisq(1000, df = 5))
 
 ### Test 1 use the box cox funtion from the mass package to evaluate the data
@@ -17,7 +17,7 @@ mass_bxcx_2 = MASS::boxcox(data = test_data, X_2~1,lambda = seq(from =-3, to = 3
 
 mass_results = c(mass_bxcx_1$x[which.max(mass_bxcx_1$y)], mass_bxcx_2$x[which.max(mass_bxcx_2$y)])
 
-EDAmigo_results = boxCox(test_data)
+EDAmigo_results = boxCox(test_data, FILTER = FALSE)
 
 expect_equivalent(mass_results , EDAmigo_results$boxCox_Results$lambda_1)
 
@@ -58,7 +58,7 @@ tidy(bc_trans, number = 1)
 tidymodel_est = tidy(bc_estimates, number = 1)
 
 
-EDAmigo_est = boxCox(state_x77, lambda = seq(from =-3, to = 3, by = 0.01))
+EDAmigo_est = boxCox(state_x77, lambda = seq(from =-5, to = 5, by = 0.01), FILTER = FALSE)
 
 MASS_results = MASS::boxcox(data = state_x77, Income~1,lambda = seq(from =-5, to = 5, by = 0.01),plotit = TRUE)
 (MASS_results$x[which.max(MASS_results$y)])
