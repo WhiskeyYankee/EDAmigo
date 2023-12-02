@@ -45,6 +45,15 @@ EDAmigo(
 
 \item{impute_factors}{A boolean indicating whether or not to impute factor columns. If set to TRUE, the value occurring most frequently is applied to missing values.}
 }
+\value{
+#' A list with the following elements:
+\itemize{
+ \item \code{df}:  A dataframe with missing values dropped and/or imputed, according to user input.
+}
+}
 \description{
 EDAmigo
+}
+\examples{
+result <- EDAmigo(f)
 }
