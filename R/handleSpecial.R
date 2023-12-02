@@ -23,6 +23,7 @@ handleSpecial <- function(df, vals = "[^0-9A-Za-z.,[:space:]-]", special_user_le
 
   special_found_replaced <- data.frame(special_found = character(), special_replaced = character())
   handle <- 0
+
   dates_times <- names(df[sapply(df, function(column) inherits(column, 'Date')) | sapply(df, function(column) inherits(column, 'POSIXct')) | sapply(df, function(column) inherits(column, 'POSIXlt'))])
   to_handle <- names(df[!colnames(df) %in% dates_times])
   for (column in to_handle){

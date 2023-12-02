@@ -16,9 +16,11 @@ Depends:
     R (>= 2.10)
 Imports: dplyr,
   methods,
-  utils
+  utils,
+  nortest,
+  stats
 Suggests: 
-    knitr,
     rmarkdown,
     descTools
 VignetteBuilder: knitr
+

@@ -36,15 +36,28 @@
 #' cleaned <- autoClean(fires, factor_tol = 10, drop_user_level = 0, impute_user_level = 0)
 autoClean <- function(df, vals = "[^0-9A-Za-z.,[:space:]-]", special_user_level = 0, factor_tol = NULL, type_user_tol = 20, no_drop = FALSE,  no_impute = FALSE, drop_col_tol = 50, drop_row_tol = NULL,  drop_user_level = 1, impute_user_level = 1,  impute_method = 'median', impute_factors = FALSE){
 
+
+  # First Pass -- Determine which columns are dates and are numeric
+  first_pass_types <- detectTypes(df, factor_tol, type_user_tol)
+  first_pass_dates_times <- first_pass_types$date_times
+  first_pass_numbers <- first_pass_types$numbers
+
   # Handle special characters. Save output as individual variables to pass out.
-  specialOutput <- handleSpecial(df, vals, special_user_level)
+  second_pass_df = df[ , names( df )[ !(names(df) %in% c(first_pass_dates_times , first_pass_numbers)) ] ]
+  specialOutput <- handleSpecial(second_pass_df, vals, special_user_level)
+  
   clearSpecial <- specialOutput$df
   special_found_replaced <- specialOutput$found_replaced
 
   # Coerce column types to proper class.
-  set_types <- detectTypes(clearSpecial, factor_tol, type_user_tol)
-  dates_times <- set_types$date_times
-  numbers <- set_types$numbers
+
+  set_type_df = df
+  set_type_df[ , names(clearSpecial)] = clearSpecial
+
+  set_types <- detectTypes(set_type_df, factor_tol, type_user_tol)
+  dates_times <-  set_types$date_times
+  numbers <-  set_types$numbers
+
   characters <- set_types$characters
   factors <- set_types$factors
   typed_df <- set_types$df
