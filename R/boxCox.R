@@ -10,10 +10,12 @@
 #' @param lambda Numeric value(s) indicating what power to use in the Box-Cox transformation
 #' @param cols A vector indicating the column numbers or the names of the columns one wishes to evaluate. If NULL then all numeric columns will be evalutated.
 #' @param alpha A numeric value used to determine the shift parameter when 0s and or negative values are detected in the data.
+
 #' @param FILTER A bolean value the at
 #'
 #'
 #' @return The boxCox function returns a list of objects. The boxCox_Results data frame has the estimates for each column evaluated by the function. The lambda_1 vector contains all of the lambdas evaluated by the function.
+
 #' @export
 #'
 #' @examples
@@ -29,6 +31,7 @@
 boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
   # Get Helper Function
 
+
   # Get the Names if they exist
   # Determine which columns are numeric
   if( is.matrix( X ) & is.numeric( X ) ){ num_col = rep( TRUE, ncol(X) )
@@ -36,6 +39,7 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
 
   if( is.data.frame(X) ) {num_col = sapply(X, class) %in% c("integer","numeric")
     col_names = names(X)}
+
 
   # If there are no column names, set to NA
   if(is.null(col_names)){col_names = rep(NA, ncol(X))}
@@ -58,6 +62,7 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
       if( !any(names(X) %in% cols) ){ stop("None of the column names provided exist in the indicated dataset.")}
       cols = which(cols == names(X))
       }
+
     if( class(cols) %in% c("integer","numeric") ){
       if(!all(cols %in% 1:ncol(X))){ stop("Column indices provide are outside of the domain of X")}
     }
@@ -103,6 +108,7 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
   transformations = matrix(NA, nrow = n, ncol = p)
 
 # Loop through each predictor
+
   for(i in 1:p){
     # get the start time
     if(i == 1){bx_start = Sys.time()}
@@ -124,7 +130,9 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
 
     # Calculate the log-likelihood
     logLike = (-n/2)*(log( 2 * pi* X_var) +1) +n*(lambda - 1) * log(geom_mean[i]) # Should be able to remove variance from this
+
     logLike[is.infinite(logLike)] = NA
+
 
 
     # Determine CI and log-likelihood prediction
@@ -165,6 +173,7 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
     results[ i , 4] = lambda_ul
     if(any(is.na(anderson_darling_old))){
       results[ i , 5] = NA
+
       results[ i , 7] = NA
       warning(paste("Unable to reslove column: ",col_names[ cols[ i ]]))
     }else{
@@ -193,6 +202,7 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
 
     # If the estimated run time is more than 3 seconds, show progress bar
     if(i == 1){bx_end = Sys.time()
+
                show_progress = FALSE}
 
     if(i == 1 & difftime(bx_end, bx_start, "secs")*p > 3){

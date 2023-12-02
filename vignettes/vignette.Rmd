@@ -15,6 +15,7 @@ knitr::opts_chunk$set(
 )
 
 ```
+
 EDAmigo is a package designed to make Exploratory Data Analysis (EDA) simple. It provides users with streamlined options for automatically cleaning, processing, and viewing their data. It also provides supports interactive EDA methods which experienced users may find useful. The following demonstration shows how EDAmigo can be used to support the EDA process:
 
 
@@ -29,12 +30,15 @@ library(EDAmigo)
 df <- fires
 ```
 
+
 # Step 2: Manually Set Date Fields
 Dates can be stored in a wide variety of ways and automatically processing all possible date storage types is outside of the scope of the EDAmigo package. EDAmigo requires all dates and times to be properly classed as 'Date', 'POSIXlt', or 'POSIXct.' If your dataset contains dates, you will need to set manually set them to 'Date', 'POSIXlt', or 'POSIXct' prior to proceeding. Let's check the classes of the columns of the fires dataframe using the str() function:
+
 ```{r}
 str(df)
 
 ```
+
 All of our date columns are type 'Date.' However, there are several special characters, improperly typed columns, and missing values. These can be handled using a variety of methods in EDAmigo.
 
 # Step 3: Clean Data
@@ -50,6 +54,7 @@ We can either use the autoClean() function to handle special characters, imprope
   # a factor tolerance of 1% to automatically coerce values with 1% or less unique values to factors
   # a user tolerance of 20%, this will prompt the user for direction when a column has <= 30% unique values
   # drop_user_level of 1, indicating that the user prefers to interact with the handleMissing() function
+
 
 result <- autoClean(df, special_user_level = 0, factor_tol = 10, type_user_tol = 10
                     , drop_user_level = 0, impute_user_level = 0, impute_factors = TRUE)
@@ -93,6 +98,7 @@ result$missing_stats
 result$dropped_cols
 result$dropped_rows
 ```
+
 
 ## boxCox
 The boxCox function differs from the boxCox function in other packages in that it performs transformations on multiple columns at the same time and offers more output to help aid the EDA process. 

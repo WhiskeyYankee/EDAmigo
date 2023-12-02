@@ -71,7 +71,9 @@ detectTypes <- function(df, factor_tol = NULL, type_user_tol = 20){
       # Remove the column from not_nums and add to factors dataframe
       if (typeStats[column, 'percent_unique'] <= factor_tol){
         factors[[column]] <- as.factor(df[[column]])
+
         not_nums <- not_nums[, !(names(not_nums) %in% column) , drop = FALSE]
+
       }
     }
 
@@ -81,20 +83,27 @@ detectTypes <- function(df, factor_tol = NULL, type_user_tol = 20){
       # Remove the column from nums and add to factors dataframe
       if (typeStats[column, 'percent_unique'] <= factor_tol){
         factors[[column]] <- as.factor(df[[column]])
+
         nums <- nums[, !(names(nums) %in% column) , drop = FALSE]
       }
     }
   } # End factor_tol coercion
 
 
-
+  count_to_coerce <- sum(typeStats[, 'percent_unique'] <= type_user_tol)
+  counter <- 1
+  counter_non_num <- sum(row.names(typeStats[typeStats[, 'percent_unique'] <= type_user_tol, ] ) %in% names(not_nums))
   # Iterate through non-numeric columns to request user input for factor coercion, using type_user_tol %
   for (column in names(not_nums)){
 
     to_type = 0
 
     if(typeStats[column, 'percent_unique'] <= type_user_tol){
-      to_type <- utils::menu(c('Factor', 'Keep as a string', 'Hey! That is actually numeric!'), title = cat(column, ' contains ', typeStats[column, 'percent_unique'],'% unique values. Is this:'))
+
+      cat(counter, ' of ', count_to_coerce, ' columns to coerce.\n \n' )
+      print(DescTools::Desc(df[[column]], main = column))
+      to_type <- utils::menu(c('Factor', 'Keep as a string', 'Hey! That is actually numeric!', 'Skip to integer analysis'), title = cat( column, ' contains ', typeStats[column, 'percent_unique'],'% unique values. Is this:'))
+      counter <- counter + 1
     }
 
     if (to_type == 1){ # Set column to factor
@@ -105,12 +114,16 @@ detectTypes <- function(df, factor_tol = NULL, type_user_tol = 20){
       nums[[column]] <- as.numeric(df[[column]])
       not_nums <- not_nums[, !(names(not_nums) %in% column)]
     }
+    if (to_type == 4){
+      counter <- counter_non_num + 1
+        break}
 
   }
 
 
 
-  # Iterate through non-numeric columns to request user input for integer coercion to char, factor, using type_user_tol %
+  # Iterate through numeric columns to request user input for integer coercion to char, factor, using type_user_tol %
+
   for (column in names(nums)){
 
     if (sum(nums[[column]] %% 1, na.rm= TRUE) == 0){ # Identify any columns of all integers
@@ -119,7 +132,11 @@ detectTypes <- function(df, factor_tol = NULL, type_user_tol = 20){
 
       # If column % unique is less than type_user_tol, request user input for coercion
       if (typeStats[column, 'percent_unique'] <= type_user_tol){
-        to_type <- utils::menu(c('Character','Factor', 'Float', 'Keep as an Integer!'), title = cat(column, ' contains ', typeStats[column, 'percent_unique'],'% unique values. Is this:'))
+        cat(counter, ' of ', count_to_coerce, ' columns to coerce.\n \n' )
+        print(DescTools::Desc(df[[column]], main = column))
+        to_type <- utils::menu(c('Character','Factor', 'Float', 'Keep as an Integer!','Exit'), title = cat(column, ' contains ', typeStats[column, 'percent_unique'],'% unique values. Is this:'))
+        counter <- counter + 1
+
       }
 
       if (to_type == 1){ # Set column to character type
@@ -139,6 +156,9 @@ detectTypes <- function(df, factor_tol = NULL, type_user_tol = 20){
       if (to_type == 4){ # Set column to int
         nums[[column]] <- as.integer(nums[[column]])
       }
+
+      if (to_type == 5){break}
+
 
     } # End if sum
   } # End for column

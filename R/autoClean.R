@@ -45,16 +45,19 @@ autoClean <- function(df, vals = "[^0-9A-Za-z.,[:space:]-]", special_user_level 
   # Handle special characters. Save output as individual variables to pass out.
   second_pass_df = df[ , names( df )[ !(names(df) %in% c(first_pass_dates_times , first_pass_numbers)) ] ]
   specialOutput <- handleSpecial(second_pass_df, vals, special_user_level)
+  
   clearSpecial <- specialOutput$df
   special_found_replaced <- specialOutput$found_replaced
 
   # Coerce column types to proper class.
+
   set_type_df = df
   set_type_df[ , names(clearSpecial)] = clearSpecial
 
   set_types <- detectTypes(set_type_df, factor_tol, type_user_tol)
   dates_times <-  set_types$date_times
   numbers <-  set_types$numbers
+
   characters <- set_types$characters
   factors <- set_types$factors
   typed_df <- set_types$df

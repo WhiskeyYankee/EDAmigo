@@ -20,8 +20,7 @@ Imports: dplyr,
   nortest,
   stats
 Suggests: 
-    knitr,
-    rmarkdown
+    rmarkdown,
+    descTools
 VignetteBuilder: knitr
-
 
