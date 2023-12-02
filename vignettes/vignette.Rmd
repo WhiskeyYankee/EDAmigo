@@ -101,10 +101,36 @@ result$dropped_rows
 
 
 ## boxCox
-The boxCox function differs from the boxCox function in other packages in that it performs transformations on multiple columns at the same time and offers more output to help aid the EDA process. 
+Often times it is desirable to use a power transformation to normalize data and/or reign outliers to improve downstream model performance.  This can be done using box cox transformations on each numeric column and evaluating the results to see if a transformation would be helpful. The boxCox function differs from implementations in other packages in that it performs transformations on multiple columns at the same time and offers more output to help aid the EDA process. When the FILTER parameter is set to TRUE, the function only outputs results for numeric columns where using a power transformation makes the data more normal and reduces outliers. The transformation are sorted to indicate which ones do the best at achieving normality so the user can prioritize which ones to review and potentially use. 
+
+Lets use boxCox to evaluate potential transformations on the cleaned fire data. The autoClean function results in data set that has 4 numeric columns and 1 integer column. To illustrate how the boxCox function can ease the EDA process, lets evaluate the data first using FLITER = FALSE
 
 ```{r}
+# Clean Data using autoClean function
+fires_cleaned = autoClean(fires, special_user_level = 0, factor_tol = 10, type_user_tol = 10
+                    , drop_user_level = 0, impute_user_level = 0, impute_factors = TRUE)
 
-fires_boxCox_Trans = boxCox(cleaned_fires)
+# Run the boxCox function
+fires_boxCox_Trans = boxCox(fires_cleaned$clean_df , FILTER = FALSE)
 
+# Evaluate the results
+fires_boxCox_Trans$boxCox_Results
 ```
+
+In the results above we get a warning that one or more of the variables did not converge in the specified lambda_1 range. Looking at the function output we see that the Lat variable does not have a lower bound and that the selected lambda_1 value is equal to -3. This is the variable that did not converge in the specified range. We can also see that the Anderson Darling statistic for the transformation Lat variable did not change by much. In fact, as we expand the lambda range, the Anderson Darling statistic for Latitude doesn't improve by more than a few points. This is a variable that doesn't benefit much from a power transformation. 
+
+We also observe in the function output that while the LocalIncidentIdentifier becomes more normal with a power transformation, it does so at the cost of increasing the number of number of outliers in the transformed data. Here we consider any values that fall outside the whiskers of a box plot to be outliers. This is indication that we might not want to transform this value either. 
+
+In fact, the only variables that have a converging lambda within the specified range, are more normal in shape after the transformation, and don't have an increase in the number of outliers as a result of the transformation are the IncidentSize and InitialResponseAcres variables. Lets see how the boxCox function works when FILTER is set to true: 
+
+```{r}
+# Run the boxCox function
+fires_boxCox_Trans = boxCox(fires_cleaned$clean_df , FILTER = TRUE)
+
+# Evaluate the results
+fires_boxCox_Trans$boxCox_Results
+```
+
+This time, we see that only the IncidentSize and InitialResponseAcres variables are kept in the output. The warning about convergence is only with regards to the Lat variable and does let us know that we may consider increasing the range and we could do that be looking at the unfiltered data to get an idea of what isn't converging.  Our trimmed down results make it easier to determine which transformations we might consider. 
+
+
