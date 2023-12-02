@@ -71,7 +71,7 @@ detectTypes <- function(df, factor_tol = NULL, type_user_tol = 20){
       # Remove the column from not_nums and add to factors dataframe
       if (typeStats[column, 'percent_unique'] <= factor_tol){
         factors[[column]] <- as.factor(df[[column]])
-        not_nums <- not_nums[, !(names(not_nums) %in% column)]
+        not_nums <- not_nums[, !(names(not_nums) %in% column) , drop = FALSE]
       }
     }
 
@@ -81,7 +81,7 @@ detectTypes <- function(df, factor_tol = NULL, type_user_tol = 20){
       # Remove the column from nums and add to factors dataframe
       if (typeStats[column, 'percent_unique'] <= factor_tol){
         factors[[column]] <- as.factor(df[[column]])
-        nums <- nums[, !(names(nums) %in% column)]
+        nums <- nums[, !(names(nums) %in% column) , drop = FALSE]
       }
     }
   } # End factor_tol coercion
