@@ -66,4 +66,4 @@ MASS_results = MASS::boxcox(data = state_x77, Income~1,lambda = seq(from =-5, to
 (MASS_results$x[which.max(MASS_results$y)])
 
 
-ENV_results = EnvStats::boxcox(state_x77$Income, lambda = seq(from =-4.5, to = 4.5, by = 0.01), objective.name = "Log-Likelihood")
+#ENV_results = EnvStats::boxcox(state_x77$Income, lambda = seq(from =-4.5, to = 4.5, by = 0.01), objective.name = "Log-Likelihood")
