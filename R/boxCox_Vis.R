@@ -48,7 +48,7 @@ boxCox_Vis = function(original_data, boxCox_result = NULL, interactive_view = TR
       print(var_dists[[i]])
       review = t(boxCox_result$boxCox_Results[ i , , drop = FALSE] )
       colnames(review) = ""
-      print(review )
+      print(noquote(review ))
       cat('\n')
       proceed = utils::menu(c('Next Factor','Exit'), title = "Box-Cox Transformations Review:")
       if (proceed == 2){break}
