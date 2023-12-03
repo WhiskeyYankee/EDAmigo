@@ -5,8 +5,10 @@ Welcome to the EDAmigo package! EDAmigo is an assistant for conducting Explorato
 ## How to install EDAmigo?
 
 This package is currently not in CRAN; however, you can easily download the package to your local machine using the following code
-> library(devtools)
-> install_github("WhiskeyYankee/EDAmigo")
+```
+library(devtools)
+install_github("WhiskeyYankee/EDAmigo")
+```
 
 
 ## Examples
