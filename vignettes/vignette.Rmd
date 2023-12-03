@@ -42,67 +42,91 @@ str(df)
 All of our date columns are type 'Date.' However, there are several special characters, improperly typed columns, and missing values. These can be handled using a variety of methods in EDAmigo.
 
 # Step 3: Clean Data
-The fires data set is an example of raw data that 
 
-We can either use the autoClean() function to handle special characters, improperly typed columns, and missing values at the same time or handle each separately using handleSpecial(), detectTypes(), and handleMissing() individually. Let's use the individual functions to provide more in depth detail about the abilities of each function.
+We can either use the autoClean() function to handle special characters, improperly typed columns, and missing values at the same time or handle each separately using handleSpecial(), detectTypes(), and handleMissing() individually. Let's use the individual functions to provide more in depth detail about the abilities of each function. In the example provided, interaction is turned off to allow the vignette to knit properly. However, videos will be included throughout this vignette to provide you with demonstrations of this interactivity.
+
+
+### Handle Special Characters with handleSpecial()
 
 ```{r}
 # Store output for future use.
 # Pass in:  
   # the dataframe, 
-  # a factor tolerance of 10% to automatically coerce values with 1% or less unique values to factors
-  # a user tolerance of 10%, this will prompt the user for direction when a column has <= 10% unique values
-  # by setting factor_tol and type_user_tol to the same level, we will not receieve any user interactivity
+  # a special_user_level set to zero indicates no user interaction with the process
 
-remove_special <- detectTypes(df, factor_tol = 10, type_user_tol = 10)
+special_results <- handleSpecial(df, special_user_level = 0)
 
 ```
 
-autoClean() provides users with the ability to interact with the EDA process. In the example provided, interaction is turned off to allow the vignette to knit properly. However, videos will be included throughout this vignette to provide you with demonstrations of this interactivity.
 
-<video width="840" height="630" autoplay loop muted>
-  <source src="C:\Users\moore\Videos\Captures\EDAmigo - main - RStudio 2023-12-02 20-40-04.mp4" type="video/mp4">
+When you opt for special_user_level = 1, you will be guided through the process of removing special characters.
+
+
+<video width="760" height="570" autoplay loop muted>
+  <source src="C:\Users\moore\Videos\Captures\Recording 2023-12-03 161357.mp4">
 </video>
 
 
-
-In our example we are storing the autoClean() output as 'result.' Let's examine the output of autoClean() function. The function returned a list of 6 elements: clean_df, 
-
-
-## clean_df
-This is the resulting dataframe with special characters removed, columns coerced to an appropriate class, and missing values handled. Compared to our original dataframe, we see that 5 columns were removed and that many columns have been coerced to a different class. 
+Let's take a look at the output of the handleSpecial() function.
 ```{r}
-# Store our clean dataframe for future use
-cleaned_fires <- result$clean_df
-str(cleaned_fires)
+# Store the returned dataframe for future use
+no_special_df <- special_results$df 
+
+# handleSpecial() also outputs the list of all found and replaced special characters    
+special_results$found_replaced
 
 ```
 
-Now, let's look at the remaining output, which are derived from other functions.
 
-## handleSpecial() output
-This shows the special characters that were found, versus the special characters that were actually removed.
+### Coerce Columns to Appropriate Classes Using detectTypes()
+
 ```{r}
-# Examine results of the handleSpecial() function
-result$special_found_replaced
+# Pass in: 
+  # dataframe from handleSpecial() output
+  # factor_tol, the % of unique values (or less) in a column to automatically coerce to a factor
+  # type_user_tol, the % of unique values (or less) which the user would like to provide input on proper class
+# Store output for future use
+typed_results <- detectTypes(no_special_df, factor_tol = 10, type_user_tol = 10)
+
 ```
+By setting factor_tol and type_user_tol to the same value, we avoid user interaction with the detectTypes() function. In the video below, we have left factor_tol = NULL. This forces the function to allow for user interaction.
 
-## detectTypes() output
-This output is a record of what the detectTypes() function changed. The first column indicates the % of unique values contained within the named column of the original dataframe. Next, we see the original column class, and the resulting column class.
+<video width="760" height="570" autoplay loop muted>
+  <source src="C:\Users\moore\Videos\Captures\Recording 2023-12-03 162944.mp4">
+</video>
+
+The detectTypes() function returns 6 elements. The first is the coerced dataframe, followed by the following lists of column names: date_times, numbers, characters, and factors. The function also outputs the type_stats dataframe. This output is a record of what the detectTypes() function changed. The first column indicates the % of unique values contained within the named column of the original dataframe. Next, we see the original column class, and the resulting column class.
+
 ```{r}
+# Store the properly typed dataframe for future use
+typed_df <- typed_results$df
+
 # Examine the results of the detectTypes() function
-result$type_stats
+typed_results$type_stats
 ```
 
-## handleMissing() output
-Lastly, the handleMissing output includes information about which columns are dropped, and at what point in the process. 'missing_stats' includes the percent of missing values for each column throughout each step in the process. It is important to note that this output may change, depending upon the options the user inputs and/or selects during interactive sections of the function.
+
+### Drop and Impute Using handleMissing()
+
+```{r}
+# Pass in dataframe from detectTypes() output
+# Store output for future use
+filled_results <- handleMissing(typed_df, drop_col_tol = 60, drop_row_tol = 80, drop_user_level = 0, impute_user_level = 0)
+
+```
+
+
+
+
+The handleMissing() output includes information about which columns are dropped, and at what point in the process. 'missing_stats' includes the percent of missing values for each column throughout each step in the process. It is important to note that this output may change, depending upon the options the user inputs and/or selects during interactive sections of the function.
+
 
 The final list of dropped columns and dropped rows are also provided, so the user knows which rows and columns are no longer contained in the final dataframe.
 ```{r}
 # Examine the results of the handleMissing() function
-result$missing_stats
-result$dropped_cols
-result$dropped_rows
+#result$missing_stats
+#result$dropped_cols
+#result$dropped_rows
 ```
 
 
