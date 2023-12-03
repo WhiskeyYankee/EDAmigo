@@ -16,12 +16,12 @@ knitr::opts_chunk$set(
 
 ```
 
-EDAmigo is a package designed to make Exploratory Data Analysis (EDA) simple. It provides users with streamlined options for automatically cleaning, processing, and viewing their data. It also provides supports interactive EDA methods which experienced users may find useful. The following demonstration shows how EDAmigo can be used to support the EDA process:
+EDAmigo is a package designed to make Exploratory Data Analysis (EDA) simple. It provides users with streamlined options for automatically cleaning, processing, and viewing their data. It also supports interactive EDA methods which experienced users may find useful. The following demonstration shows how EDAmigo can be used to support the EDA process:
 
 
 # Step 1: Load package & Import Data
 
-The first step in the EDA process is to import a dataset and load the EDAmigo library. The package comes with two example datasets: Fires and Finance  and will use the fires data for this example.
+The first step in the EDA process is to import a dataset and load the EDAmigo library. The package comes with two example datasets: Fires and Finance. We will use the fires data for this example.
 
 ```{r setup}
 library(EDAmigo)
@@ -44,25 +44,23 @@ All of our date columns are type 'Date.' However, there are several special char
 # Step 3: Clean Data
 The fires data set is an example of raw data that 
 
-We can either use the autoClean() function to handle special characters, improperly typed columns, and missing values at the same time or handle each separately using handleSpecial(), detectTypes(), and handleMissing() individually. Let's use the autoClean() function.
+We can either use the autoClean() function to handle special characters, improperly typed columns, and missing values at the same time or handle each separately using handleSpecial(), detectTypes(), and handleMissing() individually. Let's use the individual functions to provide more in depth detail about the abilities of each function.
 
 ```{r}
 # Store output for future use.
 # Pass in:  
   # the dataframe, 
-  # special_user_level set to 0 indicating automatic special character removal with no user interaction
-  # a factor tolerance of 1% to automatically coerce values with 1% or less unique values to factors
-  # a user tolerance of 20%, this will prompt the user for direction when a column has <= 30% unique values
-  # drop_user_level of 1, indicating that the user prefers to interact with the handleMissing() function
+  # a factor tolerance of 10% to automatically coerce values with 1% or less unique values to factors
+  # a user tolerance of 10%, this will prompt the user for direction when a column has <= 10% unique values
+  # by setting factor_tol and type_user_tol to the same level, we will not receieve any user interactivity
 
+remove_special <- detectTypes(df, factor_tol = 10, type_user_tol = 10)
 
-result <- autoClean(df, special_user_level = 0, factor_tol = 10, type_user_tol = 10
-                    , drop_user_level = 0, impute_user_level = 0, impute_factors = TRUE)
 ```
 
 autoClean() provides users with the ability to interact with the EDA process. In the example provided, interaction is turned off to allow the vignette to knit properly. However, videos will be included throughout this vignette to provide you with demonstrations of this interactivity.
 
-<video width="900" height="675" autoplay loop muted>
+<video width="840" height="630" autoplay loop muted>
   <source src="C:\Users\moore\Videos\Captures\EDAmigo - main - RStudio 2023-12-02 20-40-04.mp4" type="video/mp4">
 </video>
 
