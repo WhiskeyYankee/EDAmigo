@@ -3,6 +3,7 @@
 export(EDAmigo)
 export(autoClean)
 export(boxCox)
+export(boxCox_Vis)
 export(detectTypes)
 export(handleMissing)
 export(handleSpecial)
