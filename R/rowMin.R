@@ -3,7 +3,7 @@
 #' @param X A numeric matrix
 #'
 #' @return A list containing 2 numeric vectors, 1 that has the minimum row value and the other that indicates which column the row min is found in.
-#' @export
+#' @noRd
 #'
 #' @examples
 #' X = matrix(rnorm(100), nrow = 10)

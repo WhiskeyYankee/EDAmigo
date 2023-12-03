@@ -1,33 +1,40 @@
 #' Simultaneous Boxcox power transformations
 #'
 #' \strong{boxCox} is a function that aims to ease the EDA process by computing the boxcox transformations for all of the specified columns in a matrix or dataframe at the same time.
+#' The function uses the two-parameter Box-Cox transformation to account for any numeric columns that have either negative values or 0s. The alpha parameter is
+#' used to control how the shift parameter lambda_2 is set. The function also outputs asymptotically constructed confidence intervals for the power transformation
+#' parameter lambda_1 so users can easily select a simpler alternative power if they choose to. Normality is tested for both the raw and transformed data using the
+#' Anderson-Darling method.
 #'
 #' This implementation of BoxCox uses the following form of the normal log likelihood when selecting the power transformation value lambda. \deqn{log(L(\hat{\mu} , \hat{\sigma})) = -(\frac{n}{2})(log(2\pi \hat{\sigma^2}) +1)+ n(\lambda -1)log(GM(y))} where GM is the geomtric mean.
-#' Once the boxCox function has computed the likelihoods for all of the lambdas provided.
-#' Often times a simple transformation is desirable for box cox so that the results can be more easily interpreted. By default, the boxCox function selects a simple value within the 95% confidence interval as the seleced power transformation. For example, if maximum log likelihood occurs at lamda = 0.05 and 0 is contained withing the CI, then lambda will be set to 0 and the log transformation will be used.
 #'
 #' @param X A numeric matrix or a dataframe containing numeric columns
-#' @param lambda Numeric value(s) indicating what power to use in the Box-Cox transformation
+#' @param lambda Numeric value(s) indicating what power(s) to use in the Box-Cox transformation. If not provided, boxCox will use -3 , -2.99, ... , 2.99, 3
 #' @param cols A vector indicating the column numbers or the names of the columns one wishes to evaluate. If NULL then all numeric columns will be evalutated.
-#' @param alpha A numeric value used to determine the shift parameter when 0s and or negative values are detected in the data.
-
-#' @param FILTER A bolean value the at
+#' @param alpha A numeric value used to determine the shift parameter when 0s and or negative values are detected in the data. In the case of the default 0.001, if the data contains 0s but no negative values, then the shift parameter is set to 0.001.
+#' @param FILTER A Boolean value that determines if the output will filter out transformations that don't improve the adherence to normality and reduce outliers. The default is TRUE but user may wish to set it to false to either see why a value is not suggested or to perform a desired transformation.
 #'
 #'
-#' @return The boxCox function returns a list of objects. The boxCox_Results data frame has the estimates for each column evaluated by the function. The lambda_1 vector contains all of the lambdas evaluated by the function.
+#' @return The boxCox function returns a list of objects. The boxCox_Results data frame has the estimates for each column evaluated by the function. The lambda_1 vector contains all of the lambdas evaluated by the function. The log_like data frame contains the log-liklihood calculations for each lambda. The transformations dataframe contains the transformed values.
 
 #' @export
 #'
 #' @examples
-#' test_data =
-#'data.frame(
-#'  X_1 = rchisq(1000, df = 1)
-#'  ,X_2 = rchisq(1000, df = 5)
-#')
+#' # Create a dataframe with 2 numeric columns
+#' test_data = data.frame( X_1 = rchisq(1000, df = 1), X_2 = rchisq(1000, df = 5) )
 #'
-#' boxCox(test_data)$boxCox_Results
-#' plot(density(test_data$X_1), main = "Before")
-#' plot(density(boxCox(test_data)$transformations$X_2), main = "After")
+#'# Use the boxCox function with the default settings to search for meaningful transformations in the data
+#' test_results = boxCox(test_data)
+#'
+#' # View the suggested transformations
+#' test_results$boxCox_Results
+#'
+#' # Create  boxplots of the data before and after the suggested transformation is made
+#' par(mfrow = c(2,2))
+#' boxplot(test_data$X_1 , main = "X_1 Before")
+#' boxplot(test_results$transformations$X_1 , main = "X_1 After")
+#' boxplot(test_data$X_2 , main = "X_2 Before")
+#' boxplot(test_results$transformations$X_2 , main = "X_2 After")
 boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
   # Get Helper Function
 
@@ -82,7 +89,7 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
   p = ncol(X)
 
   # Get minimum value of each predictor
-  factor_min = EDAmigo::rowMin(t(X))$min_value
+  factor_min = rowMin(t(X))$min_value
 
   # Determine Lambda 2
   ## Initialize Lambda 2 to all 0s
@@ -104,7 +111,7 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
   # Set up lambda matrix and Matrix to hold results
   lambda_mat = matrix(1, nrow = n) %*% lambda
   logLik_mat = matrix(0, nrow = length(lambda), ncol = p)
-  results = matrix(0 , nrow = p, ncol = 10)
+  results = matrix(NA , nrow = p, ncol = 10)
   transformations = matrix(NA, nrow = n, ncol = p)
 
 # Loop through each predictor
@@ -137,6 +144,9 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
 
     # Determine CI and log-likelihood prediction
     mx = which.max(logLike)
+
+    # If a solution is found proceed
+  if(length(mx) > 0){
     logLike_mx = logLike[mx]
     lambda_mx = lambda[mx]
 
@@ -161,7 +171,7 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
     new_75 = as.numeric( tryCatch( stats::quantile(X_trans[ , mx] , 0.75, na.rm = T), error = function(e){NA} ))
     new_lwr = new_25 - 1.5 * (new_75 - new_25)
     new_upr = new_75 + 1.5 * (new_75 - new_25)
-    new_outliers = sum( X_trans[ , mx] > new_upr | X_trans[ , mx] < old_lwr , na.rm = T )
+    new_outliers = sum( X_trans[ , mx] > new_upr | X_trans[ , mx] < new_lwr , na.rm = T )
 
     # Store Transformations
     transformations[, i ] =  X_trans[ ,mx , drop = FALSE ]
@@ -173,7 +183,6 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
     results[ i , 4] = lambda_ul
     if(any(is.na(anderson_darling_old))){
       results[ i , 5] = NA
-
       results[ i , 7] = NA
       warning(paste("Unable to reslove column: ",col_names[ cols[ i ]]))
     }else{
@@ -196,7 +205,7 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
       warning(paste("Unable to reslove column: ",col_names[ cols[ i ]]))
     }else{
       results[ i , 10] = new_outliers}
-
+  }
     # Store the log likelihood calculations
     logLik_mat[ , i ] = logLike
 
@@ -239,7 +248,7 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
 
 # If any variables did not converge, warn the user
 if(any(is.na(boxCox_Results$lambda_1_lwr)) | any(is.na(boxCox_Results$lambda_1_upr))){
-  warning("One or more of the variables did not converge in the spcified lambda_1 range")
+  warning("One or more of the variables did not converge in the specified lambda_1 range")
 }
 
 transformations = as.data.frame(transformations)
@@ -284,6 +293,5 @@ if(FILTER == TRUE){
 }
 
 return(list(boxCox_Results = boxCox_Results, lambda_1 = lambda,  log_Like = log_Like, transformations = transformations))
-
 
 }

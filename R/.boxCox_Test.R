@@ -2,7 +2,7 @@
 library(testthat)
 
 ## Load functions
-source("R/boxCox.R")
+#source("R/boxCox.R")
 
 # Create toy data set
 test_data =
@@ -30,10 +30,12 @@ finance$loan_amnt = finance$loan_amnt +0.01
 test_bx_3 = MASS::boxcox(data = finance, loan_amnt~1,lambda = seq(from =-3, to = 3, by = 0.01),plotit = TRUE)
 test_bx_3$x[which.max(test_bx_3$y)]
 
-finance_results = boxCox(finance)
+finance_results = boxCox(finance , FILTER = FALSE)
+finance_res = boxCox(finance , FILTER = TRUE)
 
 finance_results_2 = boxCox(finance, cols = c("total_pymnt_inv", "total_pymnt"))
 finance_results_3 = boxCox(finance, cols = c(37,36))
+
 ### Test 4
 library(tidyverse)
 library(tidymodels)
@@ -64,4 +66,4 @@ MASS_results = MASS::boxcox(data = state_x77, Income~1,lambda = seq(from =-5, to
 (MASS_results$x[which.max(MASS_results$y)])
 
 
-ENV_results = EnvStats::boxcox(state_x77$Income, lambda = seq(from =-4.5, to = 4.5, by = 0.01), objective.name = "Log-Likelihood")
+#ENV_results = EnvStats::boxcox(state_x77$Income, lambda = seq(from =-4.5, to = 4.5, by = 0.01), objective.name = "Log-Likelihood")
