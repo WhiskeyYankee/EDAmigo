@@ -225,7 +225,7 @@ handleMissing <- function(df, no_drop = FALSE, no_impute = FALSE, drop_col_tol =
           if (impute_user_level == 1){
             method_invalid <- TRUE
             while (method_invalid){
-              impute_method <- readline(prompt = sprintf("%s has %.2f%% missing. What impute method would you like to use? Options are: mean, median, mode, random, zero, skip, or exit. Do not use quotation marks. ", noquote(column), as.numeric(missing_stats[which(missing_stats$variable == column), stat_column[length(stat_column) - 1]])))
+              impute_method <- readline(prompt = sprintf("%s has %.2f%% missing. What impute method would you like to use?\n Options are: mean, median, mode, random, zero, skip, or exit.\n  Do not use quotation marks. ", noquote(column), as.numeric(missing_stats[which(missing_stats$variable == column), stat_column[length(stat_column) - 1]])))
               if(!impute_method %in% skips & !impute_method %in% exits & !impute_method %in% means & !impute_method %in% medians &  !impute_method %in% modes & !impute_method %in% randos & !impute_method %in% zeros){
                 cat(noquote(c(impute_method, ' is not a valid imputation method. Please try again, or type "skip" to move to the next column, or "Exit" to end imputation.')))
               }

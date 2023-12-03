@@ -60,6 +60,14 @@ result <- autoClean(df, special_user_level = 0, factor_tol = 10, type_user_tol =
                     , drop_user_level = 0, impute_user_level = 0, impute_factors = TRUE)
 ```
 
+autoClean() provides users with the ability to interact with the EDA process. In the example provided, interaction is turned off to allow the vignette to knit properly. However, videos will be included throughout this vignette to provide you with demonstrations of this interactivity.
+
+<video width="900" height="675" autoplay loop muted>
+  <source src="C:\Users\moore\Videos\Captures\EDAmigo - main - RStudio 2023-12-02 20-40-04.mp4" type="video/mp4">
+</video>
+
+
+
 In our example we are storing the autoClean() output as 'result.' Let's examine the output of autoClean() function. The function returned a list of 6 elements: clean_df, 
 
 
