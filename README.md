@@ -10,32 +10,38 @@
   - [Step 3: Clean Data](#step-3-clean-data)
   - [Step 4: Transform the Data](#step-4-transform-the-data)
 
-  
-## What EDAmigo Does
+   <br><br>
+# What EDAmigo Does
 Welcome to the EDAmigo package! EDAmigo is an assistant for conducting Exploratory Data Analysis (EDA). Users can fully automate the cleaning, processing, and visualization of their data, or use the interactive features to assist in better understanding their data. EDAmigo incorporates some dependencies which aid in the visualization of data. We would like to thank the creators of the DescTools package.
 
 Andri Signorell et mult. al. (2017). DescTools: Tools for descriptive statistics. R package version 0.99.23.
 
 
-
-## How to install EDAmigo
+ <br><br>
+# How to install EDAmigo
 
 This package is currently not in CRAN; however, you can easily download the package to your local machine using the following code
 ```
 remotes::install_git("https://github.com/WhiskeyYankee/EDAmigo")
 ```
 
-
-## Contents of EDAmigo
+ <br><br>
+ 
+# Contents of EDAmigo
 
 EDAmigo contains a comprehensive vignette, two datasets, and the following functions:
-<h4>handleSpecial()</h4>finds and removes special characters from a dataframe. The function defaults to user interaction. <br><br>
-<h4>detectTypes()</h4>  takes a dataframe and coerces columns to the appropriate class. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class. <br><br>
-<h4>handleMissing()</h4>  fills or removes missing values. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class. Function defaults to user interaction. <br><br>
-<h4>autoClean()</h4>  automatically calls the three functions listed above to clean a dataframe of mixed data types and classes. <br><br>
-<h4>boxCox()</h4>  computes and recommends box cox transformations for the data. <br><br>
-<h4>boxCox_Vis()</h4>  visualizes the results from the boxCox() function. <br><br>
 
+**handleSpecial()** Finds and removes special characters from a dataframe. The function defaults to user interaction.
+
+**detectTypes()** Takes a dataframe and coerces columns to the appropriate class. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class.
+
+**handleMissing()** Fills or removes missing values. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class. Function defaults to user interaction.
+
+**autoClean()** Automatically calls the three functions listed above to clean a dataframe of mixed data types and classes.
+
+**boxCox()** Computes and recommends box cox transformations for the data.
+
+**boxCox_Vis()** Visualizes the results from the boxCox() function.
 
  <br><br>
 # Example Use
