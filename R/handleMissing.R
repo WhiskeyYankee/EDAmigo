@@ -1,6 +1,6 @@
 #' handleMissing
 #'
-#' @description 'handleMissing' takes a dataframe and filsl or removes missing values. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class. Function defaults to user interaction.
+#' @description 'handleMissing' takes a dataframe and fills or removes missing values. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class. Function defaults to user interaction.
 #'
 #' @param df A dataframe with any combination of variable classes, dates must be properly classified as dates.
 #' @param no_drop A boolean indicating whether or not to drop values, TRUE skips all dropping and proceeds to imputation.
