@@ -25,6 +25,6 @@ handleSpecial(df, vals = "[^0-9A-Za-z.,[:space:]-]", special_user_level = 1)
 }
 \examples{
 out <- handleSpecial(finance,special_user_level = 0)
-out[[2]]
+out$found_replaced
 
 }

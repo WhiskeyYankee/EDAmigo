@@ -122,6 +122,8 @@ handleMissing <- function(df, no_drop = FALSE, no_impute = FALSE, drop_col_tol =
           df <- df[which(!names(df) %in% drop_names)]
           dropped_cols <- append(dropped_cols, drop_names)
         }
+        input <- utils::menu(c("See missing by row", "I'm done dropping!"),title = "Dropped the specified columns! What would you like to do now? ") + 3
+
       }
 
       # If the user wants to set a column drop tolerance
@@ -130,6 +132,8 @@ handleMissing <- function(df, no_drop = FALSE, no_impute = FALSE, drop_col_tol =
         remove <- missing_stats$variable[missing_stats$initial_percent_missing >= tol ]
         dropped_cols <- unique(append(dropped_cols, as.vector(remove)))
         df <- df[, !names(df) %in% dropped_cols]
+        input <- utils::menu(c("See missing by row", "I'm done dropping!"),title = "Done! What would you like to do now? ") + 3
+
       }
 
       # If the user wants to view percent missing by observation (row)
@@ -225,7 +229,8 @@ handleMissing <- function(df, no_drop = FALSE, no_impute = FALSE, drop_col_tol =
           if (impute_user_level == 1){
             method_invalid <- TRUE
             while (method_invalid){
-              impute_method <- readline(prompt = sprintf("%s has %.2f%% missing. What impute method would you like to use?\n Options are: mean, median, mode, random, zero, skip, or exit.\n  Do not use quotation marks. ", noquote(column), as.numeric(missing_stats[which(missing_stats$variable == column), stat_column[length(stat_column) - 1]])))
+              print(noquote(sprintf("%s has %.2f%% missing. What impute method would you like to use? Do not use quotation marks.", noquote(column), as.numeric(missing_stats[which(missing_stats$variable == column), stat_column[length(stat_column) - 1]]))))
+              impute_method <- readline(prompt = "Options are: mean, median, mode, random, zero, skip, or exit.  \n  ")
               if(!impute_method %in% skips & !impute_method %in% exits & !impute_method %in% means & !impute_method %in% medians &  !impute_method %in% modes & !impute_method %in% randos & !impute_method %in% zeros){
                 cat(noquote(c(impute_method, ' is not a valid imputation method. Please try again, or type "skip" to move to the next column, or "Exit" to end imputation.')))
               }

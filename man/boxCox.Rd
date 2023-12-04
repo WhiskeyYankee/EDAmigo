@@ -19,7 +19,6 @@ boxCox(X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE)
 }
 \value{
 The boxCox function returns a list of objects. The boxCox_Results data frame has the estimates for each column evaluated by the function. The lambda_1 vector contains all of the lambdas evaluated by the function. The log_like data frame contains the log-liklihood calculations for each lambda. The transformations dataframe contains the transformed values.
-
 }
 \description{
 \strong{boxCox} is a function that aims to ease the EDA process by computing the boxcox transformations for all of the specified columns in a matrix or dataframe at the same time.
@@ -47,5 +46,4 @@ boxplot(test_data$X_1 , main = "X_1 Before")
 boxplot(test_results$transformations$X_1 , main = "X_1 After")
 boxplot(test_data$X_2 , main = "X_2 Before")
 boxplot(test_results$transformations$X_2 , main = "X_2 After")
-
 }
