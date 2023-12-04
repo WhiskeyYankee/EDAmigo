@@ -1,21 +1,24 @@
 # EDAmigo
 
 ## Table of Contents
-
-- [Step 1: Load Package and Import Data](#step-1-load-package-and-import-data)
-- [Step 2: Manually Set Date Fields](#step-2-manually-set-date-fields)
-- [Step 3: Clean Data](#step-3-clean-data)
-- [Step 4: Transform the Data](#step-4-transform-the-data)
+- [What EDAmigo Does](#what-edamigo-does)
+- [How to install EDAmigo](#how-to-install-edamigo)
+- [Contents of EDAmigo](#contents-of-edamigo)
+- [Example Use](#example-use)
+  - [Step 1: Load Package and Import Data](#step-1-load-package-and-import-data)
+  - [Step 2: Manually Set Date Fields](#step-2-manually-set-date-fields)
+  - [Step 3: Clean Data](#step-3-clean-data)
+  - [Step 4: Transform the Data](#step-4-transform-the-data)
 
   
-## What does EDAmigo do?
+## What EDAmigo Does
 Welcome to the EDAmigo package! EDAmigo is an assistant for conducting Exploratory Data Analysis (EDA). Users can fully automate the cleaning, processing, and visualization of their data, or use the interactive features to assist in better understanding their data. EDAmigo incorporates some dependencies which aid in the visualization of data. We would like to thank the creators of the DescTools package.
 
 Andri Signorell et mult. al. (2017). DescTools: Tools for descriptive statistics. R package version 0.99.23.
 
 
 
-## How to install EDAmigo?
+## How to install EDAmigo
 
 This package is currently not in CRAN; however, you can easily download the package to your local machine using the following code
 ```
