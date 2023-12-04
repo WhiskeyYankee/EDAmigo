@@ -6,8 +6,7 @@ Welcome to the EDAmigo package! EDAmigo is an assistant for conducting Explorato
 
 This package is currently not in CRAN; however, you can easily download the package to your local machine using the following code
 ```
-library(devtools)
-install_github("WhiskeyYankee/EDAmigo")
+remotes::install_git("https://github.com/WhiskeyYankee/EDAmigo")
 ```
 
 
