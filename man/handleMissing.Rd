@@ -2,7 +2,7 @@
 % Please edit documentation in R/handleMissing.R
 \name{handleMissing}
 \alias{handleMissing}
-\title{handleMissing}
+\title{Drop and Impute Missing Values}
 \usage{
 handleMissing(
   df,
@@ -31,7 +31,7 @@ handleMissing(
 
 \item{impute_user_level}{An indicator of whether the user will provide input or if the user would like to fully automate the imputation process, 1 indicates user interaction.}
 
-\item{impute_method}{A string indicating the method of imputation. If no_impute is set to TRUE, this is ignored.}
+\item{impute_method}{A string indicating the method of imputation. If no_impute is set to TRUE, this is ignored. Options are: median, mean, mode, zero, and random.}
 
 \item{impute_factors}{A boolean indicating whether or not to impute factor columns. If set to TRUE, the value occurring most frequently is applied to missing values.}
 }
@@ -45,14 +45,19 @@ A list with the following elements:
  }
 }
 \description{
-'handleMissing' takes a dataframe and filsl or removes missing values. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class. Function defaults to user interaction.
+\strong{handleMissing} fills or removes missing values from a dataframe. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class. Function defaults to user interaction.
 }
 \examples{
 # Define the dataframe, clear of special characters
-df <- handleSpecial(fires, special_user_level =0)$df
+df_no_special <- handleSpecial(fires, special_user_level =0)$df
 
-# Store function results
-out <- handleMissing(df, drop_col_tol = 80,  drop_user_level = 0, impute_user_level = 0)
+# Coerce columns to appropriate types
+df <- detectTypes(df_no_special,factor_tol = 10, type_user_tol = 10 )$df
+
+# Store and examine function results
+out <- handleMissing(df, drop_col_tol = 80,  drop_user_level = 0, impute_user_level = 0, impute_factors = TRUE)
 str(out$df)
+
+print(out$missing_stats)
 
 }

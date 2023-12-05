@@ -1,24 +1,22 @@
-#' @title detectTypes
+#' Column Class Coercion
 #'
 #' @description
-#' 'detectTypes' takes a dataframe and coerces columns to the appropriate class. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class.
+#' \strong{detectTypes} coerces dataframe columns to an appropriate class. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class before using this function.
 #'
-#' @param df A dataframe with any combination of variable classes, dates must be properly classified as dates.
+#' @param df A dataframe with any combination of variable classes. Dates must be properly classified.
 #' @param factor_tol A numeric value indicating the tolerance to automatically coerce a column to a factor. Report in percent of unique column values from 0 to 100.
-#' @param type_user_tol A numeric value indicating the tolerance to receive user input prompts to assist in selecting which columns should be coerced to another class. Report in percent of unique column values from 0 to 100.
+#' @param type_user_tol A numeric value indicating the tolerance to receive user input prompts to assist in selecting which columns should be coerced to another class. Report in percent of unique column values from 0 to 100. Setting type_user_tol equal to the factor_tol value removes user interaction.
 #'
 #' @return
-#' ' A list with the following elements:
+#' A list with the following elements:
 #' \itemize{
-#'  \item \code{df}: A dataframe with columsn coerced to an appropriate class, according to user input.
+#'  \item \code{df}: A dataframe with columns coerced to an appropriate class, according to user input.
 #'  \item \code{date_times}: A list of final column names that are dates or times.
 #'  \item \code{numbers}: A list of final column names that are numeric.
 #'  \item \code{characters}: A list of final column names that are character/string.
 #'  \item \code{factors}: A list of final column names that are factors.
 #'  \item \code{type_stats}: A dataframe providing details about which columns were coerced to another class. Includes the percent unique values per column.
 #' }
-#' 'df'= The dataframe with all variables coerced, 'date_times' = A dataframe with only the date/time columns, 'numbers' = A dataframe with only the numeric columns,
-#'  'characters' = A dataframe with only char columns, 'factors' = A dataframe with only the factor columns, 'typeStats' = A dataframe listing the percentage of unique values in each column)
 #'
 #' @export
 #'
@@ -26,14 +24,15 @@
 #' # Define the dataframe to be properly classified.
 #' df <- fires
 #'
-#' # View classes of the variables in the dataframe
+#' # View classes of the variables in the dataframe. Ensure all dates are properly classified.
 #' str(df)
 #'
-#' # Clean the dataframe using a tolerance of 10%
+#' # Clean the dataframe using a tolerance of 10%.
+#' # Setting type_user_tol = factor_tol removes user interaction
 #' clean <- detectTypes(df, factor_tol = 10, type_user_tol = 10)
 #' str(clean$df)
 #'
-#' # View information about the type coercions
+#' # View information about the type coercion
 #' clean$type_stats
 detectTypes <- function(df, factor_tol = NULL, type_user_tol = 20){
 

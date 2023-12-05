@@ -2,7 +2,7 @@
 % Please edit documentation in R/autoClean.R
 \name{autoClean}
 \alias{autoClean}
-\title{autoClean}
+\title{Automatically Clean A Dataframe}
 \usage{
 autoClean(
   df,
@@ -43,7 +43,7 @@ autoClean(
 
 \item{impute_user_level}{An indicator of whether the user will provide input or if the user would like to fully automate the imputation process, 1 indicates user interaction.}
 
-\item{impute_method}{A string indicating the method of imputation. If no_impute is set to TRUE, this is ignored.}
+\item{impute_method}{A string indicating the method of imputation. If no_impute is set to TRUE, this is ignored. Options are: median, mean, mode, zero, and random.}
 
 \item{impute_factors}{A boolean indicating whether or not to impute factor columns. If set to TRUE, the value occurring most frequently is applied to missing values.}
 }
@@ -59,8 +59,17 @@ A list with the following elements:
 }
 }
 \description{
-'autoClean' takes a dataframe of mixed classes and removes special characters, coerces columns to an appropriate class, and handles missing values. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class. The function defaults to minimal (possibly not none) user interaction.
+\strong{autoClean} takes a dataframe of mixed classes and removes special characters, coerces columns to an appropriate class, and handles missing values. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class. The function defaults to minimal user interaction.
 }
 \examples{
-cleaned <- autoClean(fires, factor_tol = 10, drop_user_level = 0, impute_user_level = 0)
+# Clean the dataframe, fires
+cleaned <- autoClean(fires, factor_tol = 10, drop_user_level = 0, impute_user_level = 0, impute_factors = TRUE)
+
+# Examine output
+cleaned$special_found_replaced
+cleaned$type_stats
+cleaned$missing_stats
+cleaned$dropped_cols
+cleaned$dropped_rows
+
 }

@@ -1,4 +1,6 @@
-#' Visualize the Results of the boxCox function
+#' Visualize the Results of the boxCox Function
+#'
+#'\strong{boxCox_Vis} is a tool to visualize the results of EDAmigo's boxCox function.
 #'
 #' @param original_data The original data source passed into the boxCox function
 #' @param boxCox_result  The list object produced by the boxCox function. If not proviced, it will be created using the original data.
@@ -12,7 +14,7 @@
 #' test_data = data.frame( X_1 = rchisq(1000, df = 1), X_2 = rchisq(1000, df = 5) )
 #'
 #'# Use the boxCox_Vis function with the default settings to search for meaningful transformations in the data
-#' boxCox_Vis(test_data)
+#' boxCox_Vis(test_data, interactive_view = FALSE)
 boxCox_Vis = function(original_data, boxCox_result = NULL, interactive_view = TRUE){
 
   # if the box cox results havent been provided then calculate them

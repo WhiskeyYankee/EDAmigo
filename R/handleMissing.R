@@ -1,6 +1,7 @@
-#' handleMissing
+#' Drop and Impute Missing Values
 #'
-#' @description 'handleMissing' takes a dataframe and fills or removes missing values. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class. Function defaults to user interaction.
+#' @description
+#' \strong{handleMissing} fills or removes missing values from a dataframe. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class. Function defaults to user interaction.
 #'
 #' @param df A dataframe with any combination of variable classes, dates must be properly classified as dates.
 #' @param no_drop A boolean indicating whether or not to drop values, TRUE skips all dropping and proceeds to imputation.
@@ -9,7 +10,7 @@
 #' @param drop_row_tol A percent tolerance to automatically drop rows with percent missing values greater than or equal to this value.If values are provided for both columns and rows, columns will be dropped first.Report in percent from 0 to 100.
 #' @param drop_user_level An indicator of whether the user will provide input or if the user would like to fully automate the drop process, 1 indicates user interaction.
 #' @param impute_user_level An indicator of whether the user will provide input or if the user would like to fully automate the imputation process, 1 indicates user interaction.
-#' @param impute_method A string indicating the method of imputation. If no_impute is set to TRUE, this is ignored.
+#' @param impute_method A string indicating the method of imputation. If no_impute is set to TRUE, this is ignored. Options are: median, mean, mode, zero, and random.
 #' @param impute_factors A boolean indicating whether or not to impute factor columns. If set to TRUE, the value occurring most frequently is applied to missing values.
 #'
 #' @return
@@ -25,11 +26,16 @@
 #'
 #' @examples
 #' # Define the dataframe, clear of special characters
-#' df <- handleSpecial(fires, special_user_level =0)$df
+#' df_no_special <- handleSpecial(fires, special_user_level =0)$df
 #'
-#' # Store function results
-#' out <- handleMissing(df, drop_col_tol = 80,  drop_user_level = 0, impute_user_level = 0)
+#' # Coerce columns to appropriate types
+#' df <- detectTypes(df_no_special,factor_tol = 10, type_user_tol = 10 )$df
+#'
+#' # Store and examine function results
+#' out <- handleMissing(df, drop_col_tol = 80,  drop_user_level = 0, impute_user_level = 0, impute_factors = TRUE)
 #' str(out$df)
+#'
+#' print(out$missing_stats)
 #'
 handleMissing <- function(df, no_drop = FALSE, no_impute = FALSE, drop_col_tol = NULL, drop_row_tol = NULL, drop_user_level = 1, impute_user_level = 1, impute_method = 'median', impute_factors = FALSE){
 

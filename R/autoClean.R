@@ -1,7 +1,7 @@
-#' autoClean
+#' Automatically Clean A Dataframe
 #'
 #' @description
-#''autoClean' takes a dataframe of mixed classes and removes special characters, coerces columns to an appropriate class, and handles missing values. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class. The function defaults to minimal (possibly not none) user interaction.
+#' \strong{autoClean} takes a dataframe of mixed classes and removes special characters, coerces columns to an appropriate class, and handles missing values. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class. The function defaults to minimal user interaction.
 #'
 #'
 #'
@@ -16,7 +16,7 @@
 #' @param drop_row_tol A percent tolerance to automatically drop rows with percent missing values greater than or equal to this value.If values are provided for both columns and rows, columns will be dropped first.Report in percent from 0 to 100.
 #' @param drop_user_level An indicator of whether the user will provide input or if the user would like to fully automate the drop process, 1 indicates user interaction.
 #' @param impute_user_level An indicator of whether the user will provide input or if the user would like to fully automate the imputation process, 1 indicates user interaction.
-#' @param impute_method A string indicating the method of imputation. If no_impute is set to TRUE, this is ignored.
+#' @param impute_method A string indicating the method of imputation. If no_impute is set to TRUE, this is ignored. Options are: median, mean, mode, zero, and random.
 #' @param impute_factors A boolean indicating whether or not to impute factor columns. If set to TRUE, the value occurring most frequently is applied to missing values.
 #'
 #' @return
@@ -33,7 +33,16 @@
 #' @export
 #'
 #' @examples
-#' cleaned <- autoClean(fires, factor_tol = 10, drop_user_level = 0, impute_user_level = 0)
+#' # Clean the dataframe, fires
+#' cleaned <- autoClean(fires, factor_tol = 10, drop_user_level = 0, impute_user_level = 0, impute_factors = TRUE)
+#'
+#' # Examine output
+#' cleaned$special_found_replaced
+#' cleaned$type_stats
+#' cleaned$missing_stats
+#' cleaned$dropped_cols
+#' cleaned$dropped_rows
+#'
 autoClean <- function(df, vals = "[^0-9A-Za-z.,[:space:]-]", special_user_level = 0, factor_tol = NULL, type_user_tol = 20, no_drop = FALSE,  no_impute = FALSE, drop_col_tol = 50, drop_row_tol = NULL,  drop_user_level = 1, impute_user_level = 1,  impute_method = 'median', impute_factors = FALSE){
 
 
@@ -45,7 +54,7 @@ autoClean <- function(df, vals = "[^0-9A-Za-z.,[:space:]-]", special_user_level 
   # Handle special characters. Save output as individual variables to pass out.
   second_pass_df = df[ , names( df )[ !(names(df) %in% c(first_pass_dates_times , first_pass_numbers)) ] ]
   specialOutput <- handleSpecial(second_pass_df, vals, special_user_level)
-  
+
   clearSpecial <- specialOutput$df
   special_found_replaced <- specialOutput$found_replaced
 

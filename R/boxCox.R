@@ -1,22 +1,28 @@
-#' Simultaneous Boxcox power transformations
+#' Simultaneous Box Cox Power Transformations
 #'
-#' \strong{boxCox} is a function that aims to ease the EDA process by computing the boxcox transformations for all of the specified columns in a matrix or dataframe at the same time.
+#' \strong{boxCox} is a function that aims to ease the EDA process by computing the Box Cox transformations for all of the specified columns in a matrix or dataframe at the same time.
 #' The function uses the two-parameter Box-Cox transformation to account for any numeric columns that have either negative values or 0s. The alpha parameter is
 #' used to control how the shift parameter lambda_2 is set. The function also outputs asymptotically constructed confidence intervals for the power transformation
 #' parameter lambda_1 so users can easily select a simpler alternative power if they choose to. Normality is tested for both the raw and transformed data using the
 #' Anderson-Darling method.
 #'
-#' This implementation of BoxCox uses the following form of the normal log likelihood when selecting the power transformation value lambda. \deqn{log(L(\hat{\mu} , \hat{\sigma})) = -(\frac{n}{2})(log(2\pi \hat{\sigma^2}) +1)+ n(\lambda -1)log(GM(y))} where GM is the geomtric mean.
+#' This implementation of Box Cox uses the following form of the normal log likelihood when selecting the power transformation value lambda. \deqn{log(L(\hat{\mu} , \hat{\sigma})) = -(\frac{n}{2})(log(2\pi \hat{\sigma^2}) +1)+ n(\lambda -1)log(GM(y))} where GM is the geomtric mean.
 #'
 #' @param X A numeric matrix or a dataframe containing numeric columns
-#' @param lambda Numeric value(s) indicating what power(s) to use in the Box-Cox transformation. If not provided, boxCox will use -3 , -2.99, ... , 2.99, 3
+#' @param lambda Numeric value(s) indicating what power(s) to use in the Box Cox transformation. If not provided, boxCox will use -3 , -2.99, ... , 2.99, 3
 #' @param cols A vector indicating the column numbers or the names of the columns one wishes to evaluate. If NULL then all numeric columns will be evalutated.
 #' @param alpha A numeric value used to determine the shift parameter when 0s and or negative values are detected in the data. In the case of the default 0.001, if the data contains 0s but no negative values, then the shift parameter is set to 0.001.
 #' @param FILTER A Boolean value that determines if the output will filter out transformations that don't improve the adherence to normality and reduce outliers. The default is TRUE but user may wish to set it to false to either see why a value is not suggested or to perform a desired transformation.
 #'
 #'
-#' @return The boxCox function returns a list of objects. The boxCox_Results data frame has the estimates for each column evaluated by the function. The lambda_1 vector contains all of the lambdas evaluated by the function. The log_like data frame contains the log-liklihood calculations for each lambda. The transformations dataframe contains the transformed values.
-
+#' @return
+#' A list with the following elements:
+#' \itemize{
+#'  \item \code{boxCox_Results}: A dataframe containing the estimates for each column evaluated by the function
+#'  \item \code{lambda_1}: A vector containing all of the lambdas evaluated by the function.
+#'  \item \code{log_Like}: A dataframe containing the log-liklihood calculations for each lambda.
+#'  \item \code{transformations}: A dataframe of transformed values.
+#' }
 #' @export
 #'
 #' @examples

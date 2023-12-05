@@ -1,13 +1,14 @@
-#' handleSpecial
+#' Special Character Removal
 #'
-#' @description 'handleSpecial' finds and removes special characters from a dataframe. The function defaults to user interaction.
+#' @description
+#' \strong{handleSpecial} finds and removes special characters from a dataframe. The function defaults to user interaction.
 #'
 #' @param df A dataframe.
 #' @param vals A gsub formatted list of characters to keep or remove.
 #' @param special_user_level An indicator of whether the user will provide input or if the user would like to fully automate the removal of special characters, 1 indicates user interaction.
 #'
 #' @return
-#' #' A list with the following elements:
+#' A list with the following elements:
 #' \itemize{
 #'  \item \code{df}: A dataframe with special characters removed, according to user input.
 #'  \item \code{found_replaced}: A dataframe providing details about the special characters found in each column and which characters were removed according to user input.
@@ -16,7 +17,10 @@
 #' @export
 #'
 #' @examples
+#' # Store function output for future use
 #' out <- handleSpecial(finance,special_user_level = 0)
+#'
+#' # Examine the characters that were found vs. replaced
 #' out$found_replaced
 #'
 handleSpecial <- function(df, vals = "[^0-9A-Za-z.,[:space:]-]", special_user_level = 1){
