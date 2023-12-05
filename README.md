@@ -29,13 +29,13 @@ remotes::install_git("https://github.com/WhiskeyYankee/EDAmigo")
  
 # Contents of EDAmigo
 
-EDAmigo contains a comprehensive vignette, two datasets, and the following functions:
+EDAmigo contains a comprehensive vignette, two datasets, and the functions listed below. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class prior to using EDAmigo functions.
 
 **handleSpecial()** Finds and removes special characters from a dataframe. The function defaults to user interaction.
 
-**detectTypes()** Takes a dataframe and coerces columns to the appropriate class. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class.
+**detectTypes()** Takes a dataframe and coerces columns to the appropriate class. 
 
-**handleMissing()** Fills or removes missing values. All dates/times should be properly defined as 'Date', 'POSIXct', or 'POSIXlt' class. Function defaults to user interaction.
+**handleMissing()** Fills or removes missing values. 
 
 **autoClean()** Automatically calls the three functions listed above to clean a dataframe of mixed data types and classes.
 
