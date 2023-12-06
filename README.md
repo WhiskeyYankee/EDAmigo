@@ -44,6 +44,8 @@ EDAmigo contains a comprehensive vignette, two datasets, and the functions liste
 
 **boxCox_Vis()** Visualizes the results from the boxCox() function.
 
+**amigoPlot()** Visualizes the highest correlated pairs.
+
  <br><br>
 # Example Use
 
