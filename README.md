@@ -46,6 +46,8 @@ EDAmigo contains a comprehensive vignette, two datasets, and the functions liste
 
 **amigoPlot()** Visualizes the highest correlated pairs.
 
+**EDAmigo()** Automatically cleans, processes, transforms, and visualizes user data.
+
  <br><br>
 # Example Use
 
