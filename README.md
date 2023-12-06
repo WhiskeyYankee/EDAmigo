@@ -9,6 +9,7 @@
   - [Step 2: Manually Set Date Fields](#step-2-manually-set-date-fields)
   - [Step 3: Clean Data](#step-3-clean-data)
   - [Step 4: Transform the Data](#step-4-transform-the-data)
+  - [Step 5: Visualize the Data](#step-5-visualize-the-data)
 
    <br><br>
 # What EDAmigo Does
@@ -42,6 +43,8 @@ EDAmigo contains a comprehensive vignette, two datasets, and the functions liste
 **boxCox()** Computes and recommends box cox transformations for the data.
 
 **boxCox_Vis()** Visualizes the results from the boxCox() function.
+
+**amigoPlot()** Visualizes the highest correlated pairs.
 
  <br><br>
 # Example Use
@@ -177,9 +180,28 @@ fires_boxCox_Trans$boxCox_Results
 
 This time, we see that only the IncidentSize and InitialResponseAcres variables are kept in the output. The warning about convergence is only with regards to the Lat variable and does let us know that we may consider increasing the range and we could do that be looking at the unfiltered data to get an idea of what isn't converging. Our trimmed down results make it easier to determine which transformations we might consider.
 
-### Visualizing Box Cox Results Using boxCox_Vis()
+## Step 5: Visualize the Data
+
+
+### Visualizing Results Using boxCox_Vis() and amigoPlot()
 
 Users can visualize the box cox results using the boxCox_Vis() function. Each recommended transformation will be displayed with key statistics and before-after plots of the data.
+```{r}
+boxCox_Vis(fires_cleaned$clean_df)
 
+```
 https://github.com/WhiskeyYankee/EDAmigo/assets/111311631/6e8c0068-e684-4334-92bc-1b509d7b5c02
+
+<br>
+Finally, users can also visualize the correlations between their numeric variables using the amigoPlot() function. This function outputs the plots and a dataframe containing the correlations, slopes, intercepts, and r^2 for each of the n_top pairs.
+<br>
+
+```{r}
+# Plot the top 2 correlation pairs
+amigoPlot(fires_cleaned$clean_df, n_top = 2)
+```
+<br>
+
+![amigoPlot_out](https://github.com/WhiskeyYankee/EDAmigo/assets/111311631/174721a4-285a-4528-91c5-10addfd60099)
+
 
