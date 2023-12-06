@@ -17,11 +17,12 @@ amigoPlot(df, n_top = 4, line_color = "dodgerblue")
 \strong{auto_plots} A dataframe containing the correlation, slope, and R^2 values for the highest correlated  variables.
 }
 \description{
-Plot Highest Correlated Variables
+\strong{amigoPlot} plots the n most highly correlated variables.
 }
 \examples{
 # Clean the dataframe, fires
-cleaned <- autoClean(fires, factor_tol = 10, drop_user_level = 0, impute_user_level = 0, impute_factors = TRUE)
+cleaned <- autoClean(fires, factor_tol = 10, drop_user_level = 0,
+                  impute_user_level = 0, impute_factors = TRUE)
 
 # Plot the highest correlated variables
 plot_results <- amigoPlot(cleaned$clean_df)

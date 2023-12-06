@@ -2,6 +2,8 @@
 
 #' Plot Highest Correlated Variables
 #'
+#'\strong{amigoPlot} plots the n most highly correlated variables.
+#'
 #' @param df A clean dataframe.
 #' @param n_top The number of variable comparisons to plot.
 #' @param line_color The regression line color.
@@ -12,7 +14,8 @@
 #'
 #' @examples
 #' # Clean the dataframe, fires
-#' cleaned <- autoClean(fires, factor_tol = 10, drop_user_level = 0, impute_user_level = 0, impute_factors = TRUE)
+#' cleaned <- autoClean(fires, factor_tol = 10, drop_user_level = 0,
+#'                   impute_user_level = 0, impute_factors = TRUE)
 #'
 #' # Plot the highest correlated variables
 #' plot_results <- amigoPlot(cleaned$clean_df)
@@ -76,18 +79,16 @@ amigoPlot <- function(df, n_top = 4, line_color = 'dodgerblue') {
     var1 <- top_correlations$VarA[i]
     var2 <- top_correlations$VarB[i]
 
+    # Define Equation
+    eq <- paste("y = ", auto_plots[i, 'Slope'],
+                "x + ", auto_plots[i, 'Intercept'],
+                ",       R^2 = ", auto_plots[i, 'R2'])
     p <- ggplot2::ggplot(df, ggplot2::aes_string(x = var1, y = var2)) +
       ggplot2::geom_point() +
       ggplot2::geom_smooth(method = "lm", se = FALSE, color = line_color,
                   formula = y ~ x) +
-      ggplot2::ggtitle(paste(var1, "vs.", var2))
-
-    # Add equation of line to plot
-    eq <- paste("y = ", auto_plots[i, 'Slope'],
-                "x + ", auto_plots[i, 'Intercept'],
-                ", R^2 = ", auto_plots[i, 'R2'])
-    p <- p + ggplot2::annotate("text", x = min(df[[var1]]),
-                      y = max(df[[var2]]), label = eq, hjust = 0, vjust = 1)
+      ggplot2::labs(title = paste(var1, "vs.", var2),
+                    subtitle = eq)
 
     return(p)
   })
