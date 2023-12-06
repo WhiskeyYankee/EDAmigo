@@ -156,10 +156,10 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
     logLike_mx = logLike[mx]
     lambda_mx = lambda[mx]
 
-    ci_ll = suppressWarnings( max( which(logLike[1:mx ] <= (logLike_mx - .5*qchisq(0.95,1)))))
+    ci_ll = suppressWarnings( max( which(logLike[1:mx ] <= (logLike_mx - .5*stats::qchisq(0.95,1)))))
     lambda_ll = lambda[ci_ll]
 
-    ci_ul = suppressWarnings( min( which(logLike[mx:length(lambda) ] <= (logLike_mx - .5*qchisq(0.95,1)))))
+    ci_ul = suppressWarnings( min( which(logLike[mx:length(lambda) ] <= (logLike_mx - .5*stats::qchisq(0.95,1)))))
     lambda_ul = lambda[ci_ul + mx -1]
 
     # Test the normality of the transformed data
@@ -223,14 +223,14 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
     if(i == 1 & difftime(bx_end, bx_start, "secs")*p > 3){
       show_progress = TRUE
       # Set progress bar
-      pb = txtProgressBar(
+      pb = utils::txtProgressBar(
         min = 0
         ,max = p -1
         ,style = 3
         ,width = 50
         ,char = "=")}
 
-    if(i >1 & show_progress == TRUE){setTxtProgressBar(pb, i)}
+    if(i >1 & show_progress == TRUE){utils::setTxtProgressBar(pb, i)}
   }
 
 # if progress bar was used, close it

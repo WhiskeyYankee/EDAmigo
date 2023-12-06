@@ -249,7 +249,7 @@ handleMissing <- function(df, no_drop = FALSE, no_impute = FALSE, drop_col_tol =
             missing_stats[which(missing_stats$variable == column), 'impute method'] <- 'Mean'
           }
           if (impute_method %in% medians){
-            df[is.na(df[[column]]), column] <- median(df[[column]], na.rm = TRUE)
+            df[is.na(df[[column]]), column] <- stats::median(df[[column]], na.rm = TRUE)
             missing_stats[which(missing_stats$variable == column), 'impute method'] <- 'Median'
           }
           if (impute_method %in% randos){

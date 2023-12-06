@@ -19,6 +19,7 @@ Imports: dplyr,
   utils,
   nortest,
   ggplot2,
+  gridExtra,
   stats
 Suggests: 
     rmarkdown,
