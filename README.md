@@ -93,6 +93,8 @@ special_results$found_replaced
 
 ```
 
+https://github.com/WhiskeyYankee/EDAmigo/assets/111311631/a9ff8c7a-995d-46fe-a919-a1850c5e9cb4
+
 
 ### Coerce Columns to Appropriate Classes Using detectTypes()
 
@@ -107,6 +109,10 @@ typed_results <- detectTypes(no_special_df, factor_tol = 10, type_user_tol = 10)
 ```
 
 By setting factor_tol and type_user_tol to the same value, we avoid user interaction with the detectTypes() function. In the video below, we have left factor_tol = NULL. This forces the function to allow for user interaction.
+
+
+
+https://github.com/WhiskeyYankee/EDAmigo/assets/111311631/0f13e877-9b16-4964-b7bf-eb1c6638e72f
 
 
 
@@ -132,6 +138,8 @@ filled_results <- handleMissing(typed_df, drop_col_tol = 60, drop_row_tol = 80, 
 
 Setting both drop_user_level and impute_user_level to 0 will remove all user interaction. In our example, we have opted to remove all columns with 60% or more missing values, and all rows that exceed 80% missing values. The function will default to median imputation for numeric columns only. Users can opt to include most frequent factor imputation for factor columns using the impute_factor boolean parameter. Below is a clip that demonstrates the behavior of the function when both drop and impute user levels are set to 1.
 
+
+https://github.com/WhiskeyYankee/EDAmigo/assets/111311631/3f9f0e79-dd83-4724-8779-ceefc5b8aaa0
 
 
 The handleMissing() output includes information about which columns are dropped, and at what point in the process. 'missing_stats' includes the percent of missing values for each column throughout each step in the process. It is important to note that this output may change, depending upon the options the user inputs and/or selects during interactive sections of the function.
@@ -191,6 +199,9 @@ Users can visualize the box cox results using the boxCox_Vis() function. Each re
 boxCox_Vis(fires_cleaned$clean_df)
 
 ```
+
+
+https://github.com/WhiskeyYankee/EDAmigo/assets/111311631/7601b6eb-18a1-4d02-8a4b-3dd10b49df91
 
 
 <br>
