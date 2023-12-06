@@ -202,6 +202,6 @@ amigoPlot(fires_cleaned$clean_df, n_top = 2)
 ```
 <br>
 
-![amigoPlot_out](https://github.com/WhiskeyYankee/EDAmigo/assets/111311631/174721a4-285a-4528-91c5-10addfd60099)
+![amigoPlot Output](https://github.com/WhiskeyYankee/EDAmigo/assets/111311631/9ef11dd2-7265-4f35-833e-e5e12b23ab6c)
 
 
