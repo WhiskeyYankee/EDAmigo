@@ -23,6 +23,7 @@ The boxCox_Vis function outputs distribution plots of the data pre and post tran
 # Create a dataframe with 2 numeric columns
 test_data = data.frame( X_1 = rchisq(1000, df = 1), X_2 = rchisq(1000, df = 5) )
 
-# Use the boxCox_Vis function with the default settings to search for meaningful transformations in the data
+# Use the boxCox_Vis function with the default settings to search for
+# meaningful transformations in the data
 boxCox_Vis(test_data, interactive_view = FALSE)
 }

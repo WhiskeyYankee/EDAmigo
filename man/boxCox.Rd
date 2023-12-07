@@ -40,7 +40,8 @@ This implementation of Box Cox uses the following form of the normal log likelih
 # Create a dataframe with 2 numeric columns
 test_data = data.frame( X_1 = rchisq(1000, df = 1), X_2 = rchisq(1000, df = 5) )
 
-# Use the boxCox function with the default settings to search for meaningful transformations in the data
+# Use the boxCox function with the default settings to search for meaningful
+#transformations in the data
 test_results = boxCox(test_data)
 
 # View the suggested transformations

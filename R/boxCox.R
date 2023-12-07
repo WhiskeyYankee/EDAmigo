@@ -29,7 +29,8 @@
 #' # Create a dataframe with 2 numeric columns
 #' test_data = data.frame( X_1 = rchisq(1000, df = 1), X_2 = rchisq(1000, df = 5) )
 #'
-#'# Use the boxCox function with the default settings to search for meaningful transformations in the data
+#'# Use the boxCox function with the default settings to search for meaningful
+#' #transformations in the data
 #' test_results = boxCox(test_data)
 #'
 #' # View the suggested transformations
@@ -70,13 +71,13 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
 
   # If cols is supplied, check that the names provided exist in the data and that
   if( !is.null(cols) ){
-    if(class(cols) == "character"){
+    if(inherits(cols, "character")){
       if( !any(names(X) %in% cols) ){ stop("None of the column names provided exist in the indicated dataset.")}
       if( !any(names(X) %in% cols) ){ stop("None of the column names provided exist in the indicated dataset.")}
       cols = which(cols == names(X))
       }
 
-    if( class(cols) %in% c("integer","numeric") ){
+    if( inherits(cols, "integer") | inherits(cols, "numeric") ){
       if(!all(cols %in% 1:ncol(X))){ stop("Column indices provide are outside of the domain of X")}
     }
     if(!all(num_col[cols])){warning("Not all of the columns specified are numeric, only numeric columns will be used.")}

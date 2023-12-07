@@ -63,7 +63,8 @@ A list with the following elements:
 }
 \examples{
 # Clean the dataframe, fires
-cleaned <- autoClean(fires, factor_tol = 10, drop_user_level = 0, impute_user_level = 0, impute_factors = TRUE)
+cleaned <- autoClean(fires, factor_tol = 10, drop_user_level = 0, impute_user_level = 0,
+        impute_factors = TRUE)
 
 # Examine output
 cleaned$special_found_replaced

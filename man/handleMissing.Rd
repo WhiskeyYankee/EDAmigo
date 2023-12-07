@@ -55,7 +55,8 @@ df_no_special <- handleSpecial(fires, special_user_level =0)$df
 df <- detectTypes(df_no_special,factor_tol = 10, type_user_tol = 10 )$df
 
 # Store and examine function results
-out <- handleMissing(df, drop_col_tol = 80,  drop_user_level = 0, impute_user_level = 0, impute_factors = TRUE)
+out <- handleMissing(df, drop_col_tol = 80,  drop_user_level = 0,
+        impute_user_level = 0, impute_factors = TRUE)
 str(out$df)
 
 print(out$missing_stats)
