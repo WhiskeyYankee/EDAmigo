@@ -70,11 +70,11 @@ df <- fires
 str(df)
 
 ```
-All of our date columns are type 'Date.' However, there are several special characters, improperly typed columns, and missing values. These can be handled using a variety of methods in EDAmigo.
+By running the code above, we can see that all of our date columns are type 'Date.' However, some columns contain special characters, are missing values, or have a type class that does not accurately represent the data. These can be handled using a variety of methods in EDAmigo.
 
 ## Step 3: Clean Data
 
-We can either use the autoClean() function to handle special characters, improperly typed columns, and missing values at the same time or handle each separately using handleSpecial(), detectTypes(), and handleMissing() individually. Let's use the individual functions to provide more in depth detail about the abilities of each function. In the example provided, interaction is turned off to allow the vignette to knit properly. However, videos will be included throughout this vignette to provide you with demonstrations of this interactivity.
+We can either use the autoClean() function to handle special characters, improperly typed columns, and missing values at the same time or handle each separately using handleSpecial(), detectTypes(), and handleMissing() individually. Let's use the individual functions to provide more in depth detail about the abilities of each function. In the example provided, interaction is turned off to so the code can be run without input from the user. The videos included throughout this readme demonstrate how the code functions when interaction is turned on.
 
 ### Handle Special Characters with handleSpecial()
 ```{r }
@@ -95,7 +95,6 @@ special_results$found_replaced
 
 https://github.com/WhiskeyYankee/EDAmigo/assets/111311631/a9ff8c7a-995d-46fe-a919-a1850c5e9cb4
 
-
 ### Coerce Columns to Appropriate Classes Using detectTypes()
 
 ```{r}
@@ -108,9 +107,7 @@ typed_results <- detectTypes(no_special_df, factor_tol = 10, type_user_tol = 10)
 
 ```
 
-By setting factor_tol and type_user_tol to the same value, we avoid user interaction with the detectTypes() function. In the video below, we have left factor_tol = NULL. This forces the function to allow for user interaction.
-
-
+By setting factor_tol and type_user_tol to the same value, we avoid user interaction with the detectTypes() function. In the video below, we have left factor_tol = NULL. This improves the EDA process by allowing for user interaction.
 
 https://github.com/WhiskeyYankee/EDAmigo/assets/111311631/0f13e877-9b16-4964-b7bf-eb1c6638e72f
 
@@ -138,9 +135,7 @@ filled_results <- handleMissing(typed_df, drop_col_tol = 60, drop_row_tol = 80, 
 
 Setting both drop_user_level and impute_user_level to 0 will remove all user interaction. In our example, we have opted to remove all columns with 60% or more missing values, and all rows that exceed 80% missing values. The function will default to median imputation for numeric columns only. Users can opt to include most frequent factor imputation for factor columns using the impute_factor boolean parameter. Below is a clip that demonstrates the behavior of the function when both drop and impute user levels are set to 1.
 
-
 https://github.com/WhiskeyYankee/EDAmigo/assets/111311631/3f9f0e79-dd83-4724-8779-ceefc5b8aaa0
-
 
 The handleMissing() output includes information about which columns are dropped, and at what point in the process. 'missing_stats' includes the percent of missing values for each column throughout each step in the process. It is important to note that this output may change, depending upon the options the user inputs and/or selects during interactive sections of the function.
 
@@ -173,7 +168,7 @@ fires_boxCox_Trans = boxCox(fires_cleaned$clean_df , FILTER = FALSE)
 fires_boxCox_Trans$boxCox_Results
 ```
 
-In the results above we get a warning that one or more of the variables did not converge in the specified lambda_1 range. Looking at the function output we see that the Lat variable does not have a lower bound and that the selected lambda_1 value is equal to -3. This is the variable that did not converge in the specified range. We can also see that the Anderson Darling statistic for the transformation Lat variable did not change by much. In fact, as we expand the lambda range, the Anderson Darling statistic for Latitude doesn't improve by more than a few points. This is a variable that doesn't benefit much from a power transformation.
+In the results above we get a warning that one or more of the variables did not converge in the specified lambda_1 range. Looking at the function output we see that the Lat variable does not have a lower bound and that the selected lambda_1 value is equal to -3. This is the variable that did not converge in the specified range. We can also see that the Anderson Darling statistic for the transformed Lat variable did not change by much. In fact, as we expand the lambda range, the Anderson Darling statistic for Latitude doesn't improve by more than a few points. This is a variable that doesn't benefit much from a power transformation.
 
 We also observe in the function output that while the LocalIncidentIdentifier becomes more normal with a power transformation, it does so at the cost of increasing the number of number of outliers in the transformed data. Here we consider any values that fall outside the whiskers of a box plot to be outliers. This is indication that we might not want to transform this value either.
 
@@ -194,18 +189,16 @@ This time, we see that only the IncidentSize and InitialResponseAcres variables 
 
 ### Visualizing Results Using boxCox_Vis() and amigoPlot()
 
-Users can visualize the box cox results using the boxCox_Vis() function. Each recommended transformation will be displayed with key statistics and before-after plots of the data.
+Users can visualize the box cox results using the boxCox_Vis() function. Each recommended transformation will be displayed with key statistics and before-after plots of the data. By default, the function requires input from the user to move on to the next plot. This is so the user can easily consume the charts one by one. Users can also disable the interactive functionality and the output will be a list containing each of the plots created by the function.
+
 ```{r}
 boxCox_Vis(fires_cleaned$clean_df)
 
 ```
-
-
 https://github.com/WhiskeyYankee/EDAmigo/assets/111311631/7601b6eb-18a1-4d02-8a4b-3dd10b49df91
 
-
 <br>
-Finally, users can also visualize the correlations between their numeric variables using the amigoPlot() function. This function outputs the plots and a dataframe containing the correlations, slopes, intercepts, and r^2 for each of the n_top pairs.
+Finally, users can visualize the correlations between their numeric variables using the amigoPlot() function. This function outputs both  plots and a dataframe containing the correlations, slopes, intercepts, and r^2 for each of the n_top pairs.
 <br>
 
 ```{r}
@@ -215,5 +208,4 @@ amigoPlot(fires_cleaned$clean_df, n_top = 2)
 <br>
 
 ![amigoPlot Output](https://github.com/WhiskeyYankee/EDAmigo/assets/111311631/9ef11dd2-7265-4f35-833e-e5e12b23ab6c)
-
 
