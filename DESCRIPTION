@@ -1,7 +1,7 @@
 Package: EDAmigo
 Type: Package
 Title: Automated and Interactive Exploratory Data Analysis
-Version: 0.1.0
+Version: 1.0.0
 Author: c(person("Peter", "Dimler", email = "peter.dimler@tamu.edu", role = c("aut", "cre")),
         person("Allison", "Moore", email = "amoore214@tamu.edu", role = c("aut", "cre")),
         person("Irbaz", "Arab", email = "irbazarab@tamu.edu", role = c("aut")))
