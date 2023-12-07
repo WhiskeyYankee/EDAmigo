@@ -72,8 +72,8 @@ boxCox = function( X, lambda = NULL, cols = NULL, alpha = 0.001, FILTER = TRUE){
   # If cols is supplied, check that the names provided exist in the data and that
   if( !is.null(cols) ){
     if(inherits(cols, "character")){
-      if( !all(names(X) %in% cols) ){ stop("None of the column names provided exist in the indicated dataset.")}
-      if( !any(names(X) %in% cols) ){ stop("Some of the column names provided exist in the indicated dataset.")}
+      if( !all(cols %in% names(X)) ){ stop("None of the column names provided exist in the indicated dataset.")}
+      if( !any(cols %in% names(X)) ){ stop("Some of the column names provided exist in the indicated dataset.")}
       cols = which(names(X) %in% cols)
       }
 
