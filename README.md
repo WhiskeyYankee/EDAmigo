@@ -112,8 +112,6 @@ By setting factor_tol and type_user_tol to the same value, we avoid user interac
 https://github.com/WhiskeyYankee/EDAmigo/assets/111311631/0f13e877-9b16-4964-b7bf-eb1c6638e72f
 
 
-
-
 The detectTypes() function returns 6 elements. The first is the coerced dataframe, followed by the following lists of column names: date_times, numbers, characters, and factors. The function also outputs the type_stats dataframe. This output is a record of what the detectTypes() function changed. The first column indicates the % of unique values contained within the named column of the original dataframe. Next, we see the original column class, and the resulting column class.
 
 ```{r}
@@ -198,7 +196,7 @@ boxCox_Vis(fires_cleaned$clean_df)
 https://github.com/WhiskeyYankee/EDAmigo/assets/111311631/7601b6eb-18a1-4d02-8a4b-3dd10b49df91
 
 <br>
-Finally, users can visualize the correlations between their numeric variables using the amigoPlot() function. This function outputs both  plots and a dataframe containing the correlations, slopes, intercepts, and r^2 for each of the n_top pairs.
+Finally, users can visualize the correlations between their numeric variables using the amigoPlot() function. This function outputs both plots and a dataframe containing the correlations, slopes, intercepts, and r^2 for each of the n_top pairs.
 <br>
 
 ```{r}
